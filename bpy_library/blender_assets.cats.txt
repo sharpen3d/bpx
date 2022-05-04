@@ -1,0 +1,23 @@
+# This is an Asset Catalog Definition file for Blender.
+#
+# Empty lines and lines starting with `#` will be ignored.
+# The first non-ignored line should be the version indicator.
+# Other lines are of the format "UUID:catalog/path/for/assets:simple catalog name"
+
+VERSION 1
+
+41d21184-c178-4f04-bb59-9a6b35b3a3e6:GeoNode_Animated:GeoNode_Animated
+0e616640-80cf-4245-ad21-8470bc0c190c:Materials:Materials
+07e12453-3cd2-4b27-80f2-2b8a7002e59e:Materials/Animated:Materials-Animated
+7bb83d49-7c01-4366-a12b-ca3256677038:Materials/FakeLit:Materials-FakeLit
+dc7a2f66-a4b7-46d3-88c2-ebb78ed54628:Materials/Gradients:Materials-Gradients
+79c8becb-c253-4ee8-bdd8-10b1c99274a6:Materials/Gradients/Gold:Materials-Gradients-Gold
+d30dd02f-2b10-4420-a466-acda4ea19024:Materials/Gradients/Gold/Individual:Materials-Gradients-Gold-Individual
+49bad2ff-23ff-4c1e-b22d-a0b6524b1f1a:Materials/Gradients/Gold/Master:Materials-Gradients-Gold-Master
+5794618d-cafe-4aaf-b810-d7a7dd4ae13d:Materials/Gradients/Linear:Materials-Gradients-Linear
+3c0aae7a-b84f-4183-80f6-b627a6de459e:Materials/Gradients/Radial:Materials-Gradients-Radial
+0735034c-d575-441d-9d23-8e4a76972994:Materials/Image:Materials-Image
+ff3511a4-6377-4b62-9de0-630a0c427902:Materials/Special:Materials-Special
+c044217c-254e-4dee-9009-df25b7389eac:Special:Special
+d3180257-f460-486b-808a-de0dbf8ed2f0:Special/Geo_Node_Meshes:Special-Geo_Node_Meshes
+9b5e814d-f957-4a77-a385-d639d38cf5c6:Special/Materials:Special-Materials
