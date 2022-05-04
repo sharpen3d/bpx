@@ -64,9 +64,9 @@ This repo includes an asset library of custom shaders, geometry node_groups
 # Comments
 Raising comments, suggestions, and bug reports on scripts and associated files is encouraged.
 When reporting an issue please adhere to the following guidelines to ensure clear communication:
--Simple explanation of the issue
--Steps to reproduce the issue
--Screenshot or link to a file experiencing the issue if applicable
+ - Simple explanation of the issue
+ - Steps to reproduce the issue
+ - Screenshot or link to a file experiencing the issue if applicable
 
 # Current Efforts:
 This repo is continuously changing, expanding, and improving. Ongoing and upcoming changes listed below
