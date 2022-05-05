@@ -71,12 +71,29 @@ class wordart_append(bpy.types.Operator):
     
     def execute(self, context):
         path = resources_path + "\\Extensions\\Resources.blend"
+        
         subFolder = "\\NodeTree\\"
         object = "wordArt_geo"
-
         library = path + subFolder
         xfilepath = path + subFolder + object
+        bpy.ops.wm.append(filename = object, filepath = xfilepath, directory = library)
+        
+        subFolder = "\\Material\\"
+        object = "wa_default_front"
+        library = path + subFolder
+        xfilepath = path + subFolder + object
+        bpy.ops.wm.append(filename = object, filepath = xfilepath, directory = library)
 
+        subFolder = "\\Material\\"
+        object = "wa_default_bevel"
+        library = path + subFolder
+        xfilepath = path + subFolder + object
+        bpy.ops.wm.append(filename = object, filepath = xfilepath, directory = library)
+        
+        subFolder = "\\Material\\"
+        object = "wa_default_depth"
+        library = path + subFolder
+        xfilepath = path + subFolder + object
         bpy.ops.wm.append(filename = object, filepath = xfilepath, directory = library)
               
         return {"FINISHED"}
@@ -103,13 +120,31 @@ class ortho_append(bpy.types.Operator):
     
     def execute(self, context):
         path = resources_path + "\\Extensions\\Resources.blend"
+        
         subFolder = "\\NodeTree\\"
         object = "bpx_geo"
-
         library = path + subFolder
         xfilepath = path + subFolder + object
-
         bpy.ops.wm.append(filename = object, filepath = xfilepath, directory = library)
+              
+        return {"FINISHED"}
+
+class release_tools(bpy.types.Operator):
+    bl_idname = "scene.releasetools"
+    bl_label = "Release All Tools"
+    
+    def execute(self, context):
+        for text in bpy.data.texts:
+            if text.name != "ToolManager.py":
+                text.use_module = False
+                text.use_fake_user = False
+                ctx = bpy.context.copy()
+                ctx['edit_text'] = text
+                bpy.ops.text.unlink(ctx)
+        bpy.context.copy()
+        ctx = bpy.context.copy()
+        ctx['edit_text'] = bpy.data.texts["ToolManager.py"]
+        bpy.ops.text.run_script(ctx)
               
         return {"FINISHED"}
     
@@ -189,6 +224,8 @@ class resources_panel(bpy.types.Panel):
         self.layout.label(text="Custom Libraries")        
         row = layout.row() 
         row.operator("scene.appendbutton")
+        row = layout.row() 
+        row.operator("scene.releasetools")
         
         #2D Tools 
         row = layout.row()        
@@ -300,6 +337,7 @@ classes = (
     ortho_append,
     packing_append,
     wordart_append,
+    release_tools,
 )
 
 def register():

@@ -112,7 +112,15 @@ class Selected(bpy.types.Panel):
     bl_category = "2D Tools"
     bl_label = "Solids"
     bl_idname = "SCENE_PT_layout_2D"
-
+    
+    @classmethod
+    def poll(self,context):     
+        isIncluded = False   
+        for text in bpy.data.texts:
+            if text.name == "2DTools.py":
+                isIncluded = True
+                break
+        return isIncluded == True
     
     def draw(self, context):
         layout = self.layout 
@@ -126,58 +134,61 @@ class Selected(bpy.types.Panel):
         row = layout.row() 
         obj = bpy.context.object
         
-        if (bpy.context.selected_objects != [] and bpy.context.object.type == 'MESH' and obj.modifiers[0].node_group.name == "bpx_geo"):
-            for modifier in obj.modifiers:
-                if modifier.type == "NODES":
-                    geo = bpy.context.object.modifiers["GeometryNodes"]
-                    scene = bpy.context.scene
-                    
-                    xVal = bpy.context.scene.render.resolution_x
-                    yVal = bpy.context.scene.render.resolution_y
-                    cam = bpy.context.scene.camera.name
-                    scale = bpy.data.cameras[cam].ortho_scale
-            
-                    height = 1024
-                    width = 1024
-                    sizeVal = width
-                    
-                    #scene["solidWidth"] = geo["Input_3"]
-                    #scene["solidHeight"] = geo["Input_4"]
+        if (bpy.context.selected_objects != []):
+            if (bpy.context.object.type == 'MESH'):
+                if(len(obj.modifiers) > 0):
+                    if(obj.modifiers[0].node_group.name == "bpx_geo"):
+                        for modifier in obj.modifiers:
+                            if modifier.type == "NODES":
+                                geo = bpy.context.object.modifiers["GeometryNodes"]
+                                scene = bpy.context.scene
                                 
-                    if (height > width):
-                        sizeVal = height
+                                xVal = bpy.context.scene.render.resolution_x
+                                yVal = bpy.context.scene.render.resolution_y
+                                cam = bpy.context.scene.camera.name
+                                scale = bpy.data.cameras[cam].ortho_scale
                         
-                    scaling = sizeVal/scale
-                    locX = bpy.context.object.location[0]
-                    locY = bpy.context.object.location[1]
-                    
-                    locXu = locX * scaling
-                    locYu = locY * scaling
-                    
-                    pixLocX = locXu-(width/-2)
-                    pixLocY = locYu-(height/-2)
-                    zLayer = bpy.context.object.location[2]
-                    
-                    layout = self.layout
-                    row = layout.row()
-                    #layout.prop(scene, '["bpxName"]')
-                    #self.layout.label(text= "position= " + str(pixLocX)+", "+ str(pixLocY))
-                    self.layout.label(text = "size= "+str(geo["Input_3"]) + "x" + str(geo["Input_4"]))
-                    self.layout.label(text= "Z Index= " + str(zLayer))
-                    
-                    row = layout.row()
-                    row.prop(geo, '["Input_3"]', text = "width")
-                    row = layout.row()
-                    row.prop(geo, '["Input_4"]', text = "height")
-                    row = layout.row()
-                    row.prop(geo, '["Input_2"]', text = "match cam size")
+                                height = 1024
+                                width = 1024
+                                sizeVal = width
+                                
+                                #scene["solidWidth"] = geo["Input_3"]
+                                #scene["solidHeight"] = geo["Input_4"]
+                                            
+                                if (height > width):
+                                    sizeVal = height
                                     
-                    #row = layout.row()
-                    #row.operator("scene.editselected")
-                    #row = layout.row()
-                    #row.operator("scene.canvassize")
-                    #row = layout.row()
-            
+                                scaling = sizeVal/scale
+                                locX = bpy.context.object.location[0]
+                                locY = bpy.context.object.location[1]
+                                
+                                locXu = locX * scaling
+                                locYu = locY * scaling
+                                
+                                pixLocX = locXu-(width/-2)
+                                pixLocY = locYu-(height/-2)
+                                zLayer = bpy.context.object.location[2]
+                                
+                                layout = self.layout
+                                row = layout.row()
+                                #layout.prop(scene, '["bpxName"]')
+                                #self.layout.label(text= "position= " + str(pixLocX)+", "+ str(pixLocY))
+                                self.layout.label(text = "size= "+str(geo["Input_3"]) + "x" + str(geo["Input_4"]))
+                                self.layout.label(text= "Z Index= " + str(zLayer))
+                                
+                                row = layout.row()
+                                row.prop(geo, '["Input_3"]', text = "width")
+                                row = layout.row()
+                                row.prop(geo, '["Input_4"]', text = "height")
+                                row = layout.row()
+                                row.prop(geo, '["Input_2"]', text = "match cam size")
+                                                
+                                #row = layout.row()
+                                #row.operator("scene.editselected")
+                                #row = layout.row()
+                                #row.operator("scene.canvassize")
+                                #row = layout.row()
+                    
 class MyOptions(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -185,6 +196,14 @@ class MyOptions(bpy.types.Panel):
     bl_label = "Composition"
     bl_idname = "SCENE_PT_layout_2D_2"
 
+    @classmethod
+    def poll(self,context):     
+        isIncluded = False   
+        for text in bpy.data.texts:
+            if text.name == "2DTools.py":
+                isIncluded = True
+                break
+        return isIncluded == True
     
     def draw(self, context):
         scene = bpy.context.scene
