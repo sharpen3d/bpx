@@ -164,25 +164,56 @@ class append_button(bpy.types.Operator):
         while index < len(tools_list):
             installatindex = False
             
+            # this format for each list item
             if index == 0:
                 if tm_tool.DTools == True:
-                    installatindex = True
-                    bpy.ops.scene.orthoappend()
+                    for text in bpy.data.texts:
+                        if text.name == "2DTools.py":
+                            print("skipping 2D Tools, already installed")
+                            break
+                    else:
+                        installatindex = True
+                        bpy.ops.scene.orthoappend()
+                        
             if index == 1:
                 if tm_tool.WordArtist == True:
-                    installatindex = True
-                    bpy.ops.scene.wordartappend()
+                    for text in bpy.data.texts:
+                        if text.name == "WordArtist.py":
+                            print("skipping Word Artist, already installed")
+                            break
+                    else:
+                        installatindex = True
+                        bpy.ops.scene.wordartappend()
+            
             if index == 2:
                 if tm_tool.FileManager == True:
-                    installatindex = True    
+                    for text in bpy.data.texts:
+                        if text.name == "FileManager.py":
+                            print("skipping File Manager, already installed")
+                            break
+                    else:
+                        installatindex = True
+  
             if index == 3:
                 if tm_tool.GeoEmitters == True:
-                    installatindex = True   
-                    bpy.ops.scene.emitterappend()
+                    for text in bpy.data.texts:
+                        if text.name == "GeoEmitters.py":
+                            print("skipping Geo Emitters, already installed")
+                            break
+                    else:
+                        installatindex = True   
+                        bpy.ops.scene.emitterappend()
+                        
             if index == 4:
                 if tm_tool.GridPacker == True:
-                    installatindex = True  
-                    bpy.ops.scene.packingappend()
+                    for text in bpy.data.texts:
+                        if text.name == "2DTools.py":
+                            print("skipping 2D Tools, already installed")
+                            break
+                    else:
+                        installatindex = True  
+                        bpy.ops.scene.packingappend()
+                        
             if index == 5:
                 if tm_tool.QuickActions == True:
                     installatindex = True  
