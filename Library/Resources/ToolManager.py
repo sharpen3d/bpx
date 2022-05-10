@@ -22,6 +22,22 @@ class TestOpenTool(bpy.types.Operator):
         exec(selected_script.as_string())
               
         return {"FINISHED"}
+    
+class AppendNodes(bpy.types.Operator):
+    bl_idname = "scene.appendnodes"
+    bl_label = "append specific node group"
+    
+    def execute(self, context):
+        path = resources_path + "\\Extensions\\Resources.blend"
+        subFolder = "\\Scene\\"
+        object = "Emitters"
+
+        library = path + subFolder
+        xfilepath = path + subFolder + object
+
+        bpy.ops.wm.append(filename = object, filepath = xfilepath, directory = library)
+              
+        return {"FINISHED"}
 
 class verify_library(bpy.types.Operator):
     bl_idname = "scene.verifylibrary"
@@ -77,6 +93,7 @@ class wordart_append(bpy.types.Operator):
         library = path + subFolder
         xfilepath = path + subFolder + object
         bpy.ops.wm.append(filename = object, filepath = xfilepath, directory = library)
+        bpy.data.node_groups['wordArt_geo']use_fake_user = True
         
         subFolder = "\\Material\\"
         object = "wa_default_front"
@@ -126,6 +143,7 @@ class ortho_append(bpy.types.Operator):
         library = path + subFolder
         xfilepath = path + subFolder + object
         bpy.ops.wm.append(filename = object, filepath = xfilepath, directory = library)
+        bpy.data.node_groups["bpx_geo"].use_fake_user = True
               
         return {"FINISHED"}
 
@@ -369,6 +387,7 @@ classes = (
     packing_append,
     wordart_append,
     release_tools,
+    AppendNodes,
 )
 
 def register():
