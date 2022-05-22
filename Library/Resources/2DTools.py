@@ -25,6 +25,26 @@ class StoreImages(bpy.types.Operator):
                 
         return {"FINISHED"}
     
+class MatchTexSize(bpy.types.Operator):
+    bl_idname = "scene.matchtexsize"
+    bl_label = "Match Texture Size"
+    
+    def execute(self, context):
+        selected = bpy.context.object
+        geo = bpy.context.object.modifiers["GeometryNodes"]
+        
+        texWidth = selected.material_slots[0].material.node_tree.nodes["Image Texture"].image.generated_width
+        texHeight = selected.material_slots[0].material.node_tree.nodes["Image Texture"].image.generated_height
+        selected.modifiers["GeometryNodes"]["Input_3"] = texWidth
+        selected.modifiers["GeometryNodes"]["Input_4"] = texHeight
+        
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.editmode_toggle()
+                
+        return {"FINISHED"}
+    
+bpy.data.images["Frame.png"].generated_width
+    
 class Button2(bpy.types.Operator):
     bl_idname = "scene.button2"
     bl_label = "add layer"
@@ -275,6 +295,10 @@ class Selected(bpy.types.Panel):
 
                                             row = layout.row()
                                             layout.template_node_view(tree, imagenode, imagenode.inputs["ImageColor"])
+                                            
+                                            row = layout.row()
+                                            row.operator("scene.matchtexsize") 
+                                            
                                             break 
                                     
                     
@@ -326,5 +350,6 @@ def register():
     bpy.utils.register_class(MyOptions)
     bpy.utils.register_class(ResetCam)
     bpy.utils.register_class(SetMat)
+    bpy.utils.register_class(MatchTexSize)
     
 register()
