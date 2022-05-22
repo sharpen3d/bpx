@@ -42,6 +42,32 @@ class MatchTexSize(bpy.types.Operator):
         bpy.ops.object.editmode_toggle()
                 
         return {"FINISHED"}
+
+class FixPix(bpy.types.Operator):
+    bl_idname = "scene.fixpix"
+    bl_label = "Fix Pixel Size"
+    
+    def execute(self, context):
+        selected = bpy.context.object
+        geo = bpy.context.object.modifiers["GeometryNodes"]
+        xVal = bpy.context.scene.render.resolution_x
+        yVal = bpy.context.scene.render.resolution_y
+        cam = bpy.context.scene.camera.data.name
+        scale = bpy.data.cameras[cam].ortho_scale
+        
+        #fixX
+        geo["Input_20"] = xVal
+        
+        #fixY
+        geo["Input_21"] = yVal
+        
+        #fixSize
+        geo["Input_22"] = scale
+        
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.editmode_toggle()
+                
+        return {"FINISHED"}
     
 class Button2(bpy.types.Operator):
     bl_idname = "scene.button2"
@@ -233,7 +259,8 @@ class Selected(bpy.types.Panel):
                                     layout = self.layout
                                     self.layout.label(text= "Pixel Size Not Accutate")
                                     #fix current
-                                    #fix all
+                                    row = layout.row()
+                                    row.operator("scene.fixpix")  
                         
                                 height = 1024
                                 width = 1024
@@ -349,5 +376,6 @@ def register():
     bpy.utils.register_class(ResetCam)
     bpy.utils.register_class(SetMat)
     bpy.utils.register_class(MatchTexSize)
+    bpy.utils.register_class(FixPix)
     
 register()
