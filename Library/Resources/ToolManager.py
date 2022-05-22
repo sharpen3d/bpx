@@ -93,7 +93,7 @@ class wordart_append(bpy.types.Operator):
         library = path + subFolder
         xfilepath = path + subFolder + object
         bpy.ops.wm.append(filename = object, filepath = xfilepath, directory = library)
-        bpy.data.node_groups['wordArt_geo']use_fake_user = True
+        bpy.data.node_groups['wordArt_geo'].use_fake_user = True
         
         subFolder = "\\Material\\"
         object = "wa_default_front"
