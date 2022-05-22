@@ -33,8 +33,8 @@ class MatchTexSize(bpy.types.Operator):
         selected = bpy.context.object
         geo = bpy.context.object.modifiers["GeometryNodes"]
         
-        texWidth = selected.material_slots[0].material.node_tree.nodes["Image Texture"].image.generated_width
-        texHeight = selected.material_slots[0].material.node_tree.nodes["Image Texture"].image.generated_height
+        texWidth = selected.material_slots[0].material.node_tree.nodes["Image Texture"].image.size[0]
+        texHeight = selected.material_slots[0].material.node_tree.nodes["Image Texture"].image.size[1]
         selected.modifiers["GeometryNodes"]["Input_3"] = texWidth
         selected.modifiers["GeometryNodes"]["Input_4"] = texHeight
         
@@ -42,8 +42,6 @@ class MatchTexSize(bpy.types.Operator):
         bpy.ops.object.editmode_toggle()
                 
         return {"FINISHED"}
-    
-bpy.data.images["Frame.png"].generated_width
     
 class Button2(bpy.types.Operator):
     bl_idname = "scene.button2"
