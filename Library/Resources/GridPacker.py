@@ -7,9 +7,6 @@ class PackTex(bpy.types.Operator):
     
     def execute(self, context):
         
-        #bpy.context.window.scene = bpy.data.scenes['packScene']
-        #bpy.context.window.scene=bpy.data.scenes['packScene']
-        
         #file paths
         thisFilePath = bpy.data.filepath
         thisFileName = bpy.path.basename(bpy.context.blend_data.filepath)
@@ -113,16 +110,17 @@ class MyOptions(bpy.types.Panel):
         row = layout.row()
         row.scale_y = 3.0
         row.operator("scene.packtexture")
-        
-        row = layout.row()
-        layout.label(text="Source Settings:")
             
         if (bpy.data.scenes["packScene"]["isLiveRender"] == 0):
-            sctext = "use scene as source"
-
+            row = layout.row()
+            sctext = "use SCENE as source instead"
+            layout.label(text="Current Source is IMAGE SEQUENCE")
+            
+            
             #select source
             row = layout.row()
             row.operator("scene.sourceselect", text = sctext)  
+            row = layout.row()
             
             #PNG nodetree
             row = layout.row()
@@ -132,7 +130,8 @@ class MyOptions(bpy.types.Panel):
             layout.prop(bpy.data.scenes["packScene"], '["sourceSize"]', text='Source Raw Size')
             
         else:
-            sctext = "use image sequence as source"
+            sctext = "use IMAGE SEQUENCE as source instead"
+            layout.label(text="Current Source is SCENE")
             
             #select source
             row = layout.row()
