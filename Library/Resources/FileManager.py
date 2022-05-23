@@ -66,6 +66,22 @@ class ConsolidateAdvanced(bpy.types.Operator):
     
     def execute(self, context):
         
+        #locate files
+        thisFilePath = bpy.data.filepath
+        thisFileName = bpy.path.basename(bpy.context.blend_data.filepath)
+        fileBaseName = thisFileName.replace(".blend", "")
+        currentPath = thisFilePath.replace(thisFileName, "")
+        currentPath = currentPath[:-1]
+        truncatedPath = "C:\\"
+
+        #gets the parent of the blend file's directory
+        x = 0
+        for i in currentPath:
+            sub = currentPath[x]
+            if (sub == "\\"):    
+                truncatedPath = currentPath[:x]            
+            x=x+1
+        
         bpy.ops.wm.save_mainfile()        
         my_tool = context.scene.my_tool
         thisFilePath = bpy.data.filepath
@@ -93,6 +109,22 @@ class ConsolidateFonts(bpy.types.Operator):
     bl_label = "Collect Fonts"
     
     def execute(self, context):
+        
+        #locate files
+        thisFilePath = bpy.data.filepath
+        thisFileName = bpy.path.basename(bpy.context.blend_data.filepath)
+        fileBaseName = thisFileName.replace(".blend", "")
+        currentPath = thisFilePath.replace(thisFileName, "")
+        currentPath = currentPath[:-1]
+        truncatedPath = "C:\\"
+
+        #gets the parent of the blend file's directory
+        x = 0
+        for i in currentPath:
+            sub = currentPath[x]
+            if (sub == "\\"):    
+                truncatedPath = currentPath[:x]            
+            x=x+1
         
         if(fileBaseName == "untitled" or fileBaseName == "untitled" or fileBaseName == ""):
             self.report({'INFO'}, "Please save this .blend file before using this operator")
@@ -167,6 +199,22 @@ class ConsolidateImages(bpy.types.Operator):
     bl_label = "Collect Images"
     
     def execute(self, context):
+        
+        #locate files
+        thisFilePath = bpy.data.filepath
+        thisFileName = bpy.path.basename(bpy.context.blend_data.filepath)
+        fileBaseName = thisFileName.replace(".blend", "")
+        currentPath = thisFilePath.replace(thisFileName, "")
+        currentPath = currentPath[:-1]
+        truncatedPath = "C:\\"
+
+        #gets the parent of the blend file's directory
+        x = 0
+        for i in currentPath:
+            sub = currentPath[x]
+            if (sub == "\\"):    
+                truncatedPath = currentPath[:x]            
+            x=x+1
         
         if(fileBaseName == "untitled" or fileBaseName == "untitled" or fileBaseName == ""):
             self.report({'INFO'}, "Please save this .blend file before using this operator")

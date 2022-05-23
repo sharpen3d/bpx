@@ -395,14 +395,14 @@ class QuickActions2(bpy.types.Panel):
         row.operator("scene.hdriworld")        
         row = layout.row()
         
-        gridpackadded = False
-        for i in bpy.data.scenes:
-            if i.name == "packScene":
-                gridpackadded = True
-            
-        if gridpackadded == False:
-            row.operator("scene.appendgridpack")        
-            row = layout.row()
+#        gridpackadded = False
+#        for i in bpy.data.scenes:
+#            if i.name == "packScene":
+#                gridpackadded = True
+#            
+#        if gridpackadded == False:
+#            row.operator("scene.appendgridpack")        
+#            row = layout.row()
         
 bpy.utils.register_class(QuickActions)  
 bpy.utils.register_class(QuickActions2) 
