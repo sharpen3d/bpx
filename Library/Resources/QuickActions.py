@@ -51,6 +51,61 @@ class StoreImages2(bpy.types.Operator):
                 img.reload()
                 
         return {"FINISHED"}
+    
+class AlignX(bpy.types.Operator):
+    bl_idname = "scene.alignx"
+    bl_label = "Align X"
+    
+    def execute(self, context):
+        selected = bpy.context.selected_objects
+        active = bpy.context.object
+#        currentScale = [0] * (len(selected)+1)
+#        
+#        i = 0
+#        while i < len(selected):
+#            currentScale[i] = selected[i].scale[0]
+#            i=i+1
+#        
+#        bpy.ops.transform.resize(value=(0, 1, 1), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(True, False, False), mirror=False, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
+#        
+#        x = 0
+#        while x < len(selected):
+#            selected[x].scale[0] = currentScale[x]
+#            x=x+1
+
+        for obj in selected:
+            if obj != bpy.context.object:
+                obj.location[0] = active.location[0]
+
+                
+        return {"FINISHED"}
+    
+class AlignY(bpy.types.Operator):
+    bl_idname = "scene.aligny"
+    bl_label = "Align Y"
+    
+    def execute(self, context):
+        selected = bpy.context.selected_objects
+        active = bpy.context.object
+        for obj in selected:
+            if obj != bpy.context.object:
+                obj.location[1] = active.location[1]
+                
+        return {"FINISHED"}
+    
+class AlignZ(bpy.types.Operator):
+    bl_idname = "scene.alignz"
+    bl_label = "Align Z"
+    
+    def execute(self, context):
+        selected = bpy.context.selected_objects
+        active = bpy.context.object
+        for obj in selected:
+            if obj != bpy.context.object:
+                obj.location[2] = active.location[2]
+                
+        return {"FINISHED"}
+
 
 class RenderFull(bpy.types.Operator):
     bl_idname = "scene.renderfull"
@@ -394,6 +449,12 @@ class QuickActions2(bpy.types.Panel):
         row = layout.row()
         row.operator("scene.hdriworld")        
         row = layout.row()
+        row.operator("scene.alignx")        
+        row = layout.row()
+        row.operator("scene.aligny")        
+        row = layout.row()
+        row.operator("scene.alignz")        
+        row = layout.row()
         
 #        gridpackadded = False
 #        for i in bpy.data.scenes:
@@ -416,3 +477,6 @@ bpy.utils.register_class(AppendGridPack)
 bpy.utils.register_class(CreateHDRI)  
 bpy.utils.register_class(StoreImages2)
 bpy.utils.register_class(WM_OT_path_open)
+bpy.utils.register_class(AlignX)
+bpy.utils.register_class(AlignY)
+bpy.utils.register_class(AlignZ)
