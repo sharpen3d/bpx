@@ -37,6 +37,36 @@ class MakeText(bpy.types.Operator):
                                
         return {"FINISHED"}
 
+class UseAdvGeo(bpy.types.Operator):
+    bl_idname = "scene.useadvgeo"
+    bl_label = "Use Advanced Geometry"
+    
+    def execute(self, context):
+        text_tool = context.scene.text_tool
+        selected = bpy.context.object
+        selected.data.align_x = 'CENTER'
+        selected.data.align_y = 'CENTER'
+        
+        #add geo node style
+        mod = bpy.ops.object.modifier_add(type='NODES')
+        textNodes = bpy.data.node_groups["wordArt_geo"]
+        geo = bpy.context.object.modifiers["GeometryNodes"]
+        geo.node_group = textNodes
+        geo["Output_2_attribute_name"] = "nrmMin"
+        geo["Output_3_attribute_name"] = "nrmMax"
+        geo["Output_4_attribute_name"] = "parts_id"
+        geo["Output_15_attribute_name"] = "posMin"
+        geo["Output_16_attribute_name"] = "posMax"
+        
+        #set up material
+        if (len(selected.material_slots) < 6):
+            amt = 6 - len(selected.material_slots)
+            while amt > 0:
+                selected.data.materials.append(None)
+                amt = amt - 1
+                               
+        return {"FINISHED"}
+
 class SetText(bpy.types.Operator):
     bl_idname = "scene.settext"
     bl_label = "Edit Text"
@@ -175,33 +205,59 @@ class CopyToSelected(bpy.types.Operator):
                     txt.data.bevel_resolution = selected.data.bevel_resolution
                 
                 if text_tool.use_geometry == True:
-                    geoSrc = bpy.context.object.modifiers["GeometryNodes"]
                     
-                    #currently, if there is any modifier other than wordArt_geo on txt, this will fail
-                    if len(txt.modifiers) == 0:
-                        print(txt.name)
-                        bpy.context.view_layer.objects.active = txt
+                    #check if source has wordart nodes
+                    srcNodes = False
+                    if len(bpy.context.object.modifiers) > 0:
+                        for modif in bpy.context.object.modifiers:
+                            if modif.name == "GeometryNodes":
+                                if modif.node_group == bpy.data.node_groups["wordArt_geo"]:
+                                    srcNodes = True
+                                    geoSrc = modif
+                                    break
+                    
+                    if srcNodes == True:
                         
-                        mod = bpy.ops.object.modifier_add(type='NODES')
-                        textNodes = bpy.data.node_groups["wordArt_geo"]
-                        geo = txt.modifiers["GeometryNodes"]
-                        geo.node_group = textNodes                        
-                        geo["Output_2_attribute_name"] = "nrmMin"
-                        geo["Output_3_attribute_name"] = "nrmMax"
-                        geo["Output_4_attribute_name"] = "parts_id"
-                        geo["Output_15_attribute_name"] = "posMin"
-                        geo["Output_16_attribute_name"] = "posMax"
-                    
-                    bpy.context.view_layer.objects.active = selected
-                    geoTgt = txt.modifiers["GeometryNodes"]
-                    
-                    geoTgt["Input_5"] = geoSrc["Input_5"]
-                    geoTgt["Input_6"] = geoSrc["Input_6"]
-                    geoTgt["Input_7"] = geoSrc["Input_7"]
-                    geoTgt["Input_12"] = geoSrc["Input_12"]
-                    geoTgt["Input_14"] = geoSrc["Input_14"]
-                    geoTgt["Input_17"] = geoSrc["Input_17"]
-                    geoTgt["Input_19"] = geoSrc["Input_19"]
+                        #check if target has geo nodes
+                        tgtNodes = False
+                        
+                        if len(txt.modifiers) > 0:
+                            for modif in txt.modifiers:
+                                if modif.name == "GeometryNodes":
+                                    if modif.node_group == bpy.data.node_groups["wordArt_geo"]:
+                                        tgtNodes = True
+                                        mod = modif
+                                        break
+                        
+                        
+                        #add nodes to target(s)                                 
+                        if tgtNodes == False:
+                            print(txt.name)
+                            
+                            #bpy.context.view_layer.objects.active = txt                            
+                            #mod = bpy.ops.object.modifier_add(type='NODES')
+                            txt.modifiers.new("GeometryNodes", 'NODES')
+                            #txt.modifiers[0] = ["GeometryNodes"]
+                            
+                            textNodes = bpy.data.node_groups["wordArt_geo"]                            
+                            geo = txt.modifiers["GeometryNodes"]
+                            geo.node_group = textNodes                        
+                            geo["Output_2_attribute_name"] = "nrmMin"
+                            geo["Output_3_attribute_name"] = "nrmMax"
+                            geo["Output_4_attribute_name"] = "parts_id"
+                            geo["Output_15_attribute_name"] = "posMin"
+                            geo["Output_16_attribute_name"] = "posMax"
+                        
+                        bpy.context.view_layer.objects.active = selected
+                        geoTgt = txt.modifiers["GeometryNodes"]
+                        
+                        geoTgt["Input_5"] = geoSrc["Input_5"]
+                        geoTgt["Input_6"] = geoSrc["Input_6"]
+                        geoTgt["Input_7"] = geoSrc["Input_7"]
+                        geoTgt["Input_12"] = geoSrc["Input_12"]
+                        geoTgt["Input_14"] = geoSrc["Input_14"]
+                        geoTgt["Input_17"] = geoSrc["Input_17"]
+                        geoTgt["Input_19"] = geoSrc["Input_19"]
 
                 if text_tool.use_material == True:
                     if (len(txt.material_slots) < len(selected.material_slots)):
@@ -246,7 +302,7 @@ class Text_settings(bpy.types.PropertyGroup):
     
     edit_text: bpy.props.StringProperty(
         name='New Text',
-        default="Edited Text"
+        default="New Text"
     )
     
     user_bevel: bpy.props.FloatProperty(
@@ -336,15 +392,15 @@ class Text_settings(bpy.types.PropertyGroup):
 
 #create panel
 class Text_Panel(bpy.types.Panel):
-    bl_space_type = 'VIEW_3D'
-    bl_region_type = 'UI'
-    bl_category = "Word Artist"
-    bl_label = "Text Geometry"
-    bl_idname = "SCENE_PT_layout_Word_Art"
+    bl_idname = "SCENE_PT_layout_wa_props"
+    bl_label = "Advanced Geometry"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data"    
     
     def draw_header(self, context):
         layout = self.layout
-        layout.label(icon="OUTLINER_OB_FONT")
+        layout.label(icon="FONTPREVIEW")
     
     def draw(self, context):        
         scene = bpy.context.scene 
@@ -352,7 +408,15 @@ class Text_Panel(bpy.types.Panel):
         text_tool = context.scene.text_tool
         row = layout.row()
         
-        if (bpy.context.selected_objects != [] and bpy.context.object.type == 'FONT'):
+        hasNodes = False
+        if len(bpy.context.object.modifiers) > 0:
+            for mod in bpy.context.object.modifiers:
+                if mod.name == "GeometryNodes":
+                    if mod.node_group == bpy.data.node_groups["wordArt_geo"]:
+                        hasNodes = True
+                        break
+        
+        if hasNodes == True:
             geo = bpy.context.object.modifiers["GeometryNodes"]
             row.prop(geo, '["Input_19"]', text='Slide X')
             row = layout.row()
@@ -368,6 +432,10 @@ class Text_Panel(bpy.types.Panel):
             row = layout.row()
             row.prop(geo, '["Input_17"]', text='Stroke (3) Width')
             row = layout.row()
+        else:
+            row.operator("scene.useadvgeo")
+            row = layout.row()
+                            
             
 
             
@@ -383,11 +451,11 @@ class Text_Panel(bpy.types.Panel):
 
         
 class Edit_Text_Panel(bpy.types.Panel):
-    bl_space_type = 'VIEW_3D'
-    bl_region_type = 'UI'
-    bl_category = "Word Artist"
-    bl_label = "Edit Word Art"
-    bl_idname = "SCENE_PT_layout_Edit_Text"
+    bl_idname = "SCENE_PT_layout_EditTextProp"
+    bl_label = "Font Selector"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data"    
     
     def draw_header(self, context):
         layout = self.layout
@@ -398,11 +466,11 @@ class Edit_Text_Panel(bpy.types.Panel):
         layout = self.layout
         text_tool = context.scene.text_tool
         
-        layout.label(text="Text Body:")
-        row = layout.row()
-        row.prop(text_tool, "edit_text", text='')
-        row = layout.row(align=True)            
-        row.operator("scene.maketext", text='New Text Object', icon='OUTLINER_DATA_FONT')
+#        layout.label(text="Text Body:")
+#        row = layout.row()
+#        row.prop(text_tool, "edit_text", text='')
+#        row = layout.row(align=True)            
+#        row.operator("scene.maketext", text='New Text Object', icon='OUTLINER_DATA_FONT')
         
         #Set Selected Text
         if (bpy.context.selected_objects != [] and bpy.context.object.type == 'FONT'):
@@ -410,56 +478,56 @@ class Edit_Text_Panel(bpy.types.Panel):
             selected = bpy.context.object
         
             #button to add new          
-            row.operator("scene.settext", text='Update Selected', icon='OUTLINER_DATA_FONT')
+            #row.operator("scene.settext", text='Update Selected', icon='OUTLINER_DATA_FONT')
             
             #Cycle through fonts
-            row = layout.row()
-            layout.label(text="Cycle Through Fonts")
+#            row = layout.row()
+#            layout.label(text="Cycle Through Fonts")
             row = layout.row(align=True)
             row.operator("scene.cyclebackward", text='', icon='TRIA_LEFT')
             row.prop(selected.data, "font", text="")
             row.operator("scene.cycleforward", text='', icon='TRIA_RIGHT')
 
-            #underline
-            row = layout.row()
-            layout.label(text="Character Style:")
-            row = layout.row()
-            row.prop(selected.data, "shear", text="Shear")
-            row = layout.row()  
-            row.operator("scene.setunderline")
-            row = layout.row()
-            row.prop(selected.data, "underline_position", text="Underline Position")
-            row = layout.row()
-            row.prop(selected.data, "underline_height", text="Underline Thickness")
-            
-            #settings
-            row = layout.row()
-            layout.label(text="Geometry Settings")
-            row = layout.row()
-            row.prop(selected.data, "extrude", text="Extrude")
-            row = layout.row()
-            row.prop(selected.data, "offset", text="Offset")
-            row = layout.row()
-            row.prop(selected.data, "resolution_u", text="Resolution")
-            row = layout.row()
-            layout.label(text="Bevel")
-            row = layout.row()                        
-            row.prop(selected.data, "bevel_mode", text="")
-            row = layout.row()
-            row.prop(selected.data, "bevel_depth", text="Bevel Depth")
-            row = layout.row()            
-            layout.label(text="Spacing Settings")
-            row = layout.row()
-            row.prop(selected.data, "space_character", text="Character Spacing")
-            row = layout.row()
-            row.prop(selected.data, "space_word", text="Word Spacing")
-            row = layout.row()
-            row.prop(selected.data, "space_line", text="Line Spacing")
-            row = layout.row()
-            layout.label(text="Text Follows Curve")
-            row = layout.row()            
-            row.prop(selected.data, "follow_curve", text="")
-            row = layout.row()
+#            #underline
+#            row = layout.row()
+#            layout.label(text="Character Style:")
+#            row = layout.row()
+#            row.prop(selected.data, "shear", text="Shear")
+#            row = layout.row()  
+#            row.operator("scene.setunderline")
+#            row = layout.row()
+#            row.prop(selected.data, "underline_position", text="Underline Position")
+#            row = layout.row()
+#            row.prop(selected.data, "underline_height", text="Underline Thickness")
+#            
+#            #settings
+#            row = layout.row()
+#            layout.label(text="Geometry Settings")
+#            row = layout.row()
+#            row.prop(selected.data, "extrude", text="Extrude")
+#            row = layout.row()
+#            row.prop(selected.data, "offset", text="Offset")
+#            row = layout.row()
+#            row.prop(selected.data, "resolution_u", text="Resolution")
+#            row = layout.row()
+#            layout.label(text="Bevel")
+#            row = layout.row()                        
+#            row.prop(selected.data, "bevel_mode", text="")
+#            row = layout.row()
+#            row.prop(selected.data, "bevel_depth", text="Bevel Depth")
+#            row = layout.row()            
+#            layout.label(text="Spacing Settings")
+#            row = layout.row()
+#            row.prop(selected.data, "space_character", text="Character Spacing")
+#            row = layout.row()
+#            row.prop(selected.data, "space_word", text="Word Spacing")
+#            row = layout.row()
+#            row.prop(selected.data, "space_line", text="Line Spacing")
+#            row = layout.row()
+#            layout.label(text="Text Follows Curve")
+#            row = layout.row()            
+#            row.prop(selected.data, "follow_curve", text="")
+#            row = layout.row()
             
 #            row = layout.row()
 #            layout.label(text="Edit Bevel Of Selected")
@@ -474,15 +542,16 @@ class Edit_Text_Panel(bpy.types.Panel):
 #            row.operator("scene.setextrude")
 
 class Match_Text_Panel(bpy.types.Panel):
-    bl_space_type = 'VIEW_3D'
-    bl_region_type = 'UI'
-    bl_category = "Word Artist"
-    bl_label = "Active To Selected"
-    bl_idname = "SCENE_PT_layout_Match"
+
+    bl_idname = "SCENE_PT_layout_cpyslectProp"
+    bl_label = "Copy Font Data"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data" 
     
     def draw_header(self, context):
         layout = self.layout
-        layout.label(icon="MOD_ARRAY")
+        layout.label(icon="FONTPREVIEW")
     
     def draw(self, context):        
         scene = bpy.context.scene 
@@ -490,7 +559,7 @@ class Match_Text_Panel(bpy.types.Panel):
         text_tool = context.scene.text_tool
         
         #Set Selected Text
-        if (bpy.context.selected_objects != [] and bpy.context.object.type == 'FONT'):
+        if (len(bpy.context.selected_objects) > 1 and bpy.context.object.type == 'FONT'):
             
             selected = bpy.context.object
             
@@ -498,37 +567,37 @@ class Match_Text_Panel(bpy.types.Panel):
             row.operator("scene.copytoselected")
             row = layout.row()
                     
-            #write new text
-            layout.label(text="Text Data:")
-            row = layout.row(align=True)
-            row.prop(text_tool, "use_body")
-            row.prop(text_tool, "use_font")
-            row.prop(text_tool, "use_shear")
-            layout.label(text="Geometry Data:")
-            row = layout.row(align=True)
-            row.prop(text_tool, "use_extrude")
-            row.prop(text_tool, "use_offset")
-            row.prop(text_tool, "use_resolution")
-            layout.label(text="Bevel Data:")
-            row = layout.row(align=True)
-            row.prop(text_tool, "use_bevel_mode")
-            row.prop(text_tool, "use_bevel_depth")
-            row.prop(text_tool, "use_bevel_resolution")
-            layout.label(text="Additional Data:")
-            row = layout.row(align=True)
-            row.prop(text_tool, "use_geometry")
-            row.prop(text_tool, "use_material")
+        #write new text
+        layout.label(text="Text Data:")
+        row = layout.row(align=True)
+        row.prop(text_tool, "use_body")
+        row.prop(text_tool, "use_font")
+        row.prop(text_tool, "use_shear")
+        layout.label(text="Geometry Data:")
+        row = layout.row(align=True)
+        row.prop(text_tool, "use_extrude")
+        row.prop(text_tool, "use_offset")
+        row.prop(text_tool, "use_resolution")
+        layout.label(text="Bevel Data:")
+        row = layout.row(align=True)
+        row.prop(text_tool, "use_bevel_mode")
+        row.prop(text_tool, "use_bevel_depth")
+        row.prop(text_tool, "use_bevel_resolution")
+        layout.label(text="Additional Data:")
+        row = layout.row(align=True)
+        row.prop(text_tool, "use_geometry")
+        row.prop(text_tool, "use_material")
             
 class Kern_Text_Panel(bpy.types.Panel):
-    bl_space_type = 'VIEW_3D'
-    bl_region_type = 'UI'
-    bl_category = "Word Artist"
-    bl_label = "Per-Character Styling"
-    bl_idname = "SCENE_PT_layout_Kern"
+    bl_idname = "SCENE_PT_layout_KernProp"
+    bl_label = "Kern By Character"
+    bl_space_type = 'PROPERTIES'
+    bl_region_type = 'WINDOW'
+    bl_context = "data" 
     
     def draw_header(self, context):
         layout = self.layout
-        layout.label(icon="CENTER_ONLY")
+        layout.label(icon="FONTPREVIEW")
     
     def draw(self, context):        
         scene = bpy.context.scene 
@@ -564,6 +633,7 @@ classes = (
     SetUnderline,
     Kern_Text_Panel,
     CopyToSelected,
+    UseAdvGeo,
 )
 
 def register():
