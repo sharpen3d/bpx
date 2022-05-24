@@ -234,7 +234,24 @@ class append_button(bpy.types.Operator):
                         
             if index == 5:
                 if tm_tool.QuickActions == True:
-                    installatindex = True  
+                    for text in bpy.data.texts:
+                        if text.name == "QuickActions.py":
+                            print("skipping 2D Tools, already installed")
+                            break
+                    else:                        
+                        installatindex = True
+                        bpy.ops.scene.quickactions
+                        
+                        selected_tool = "AlignMenu.py"  
+                        path = resources_path + "//" + selected_tool
+                        path = os.path.normpath(path)
+                        bpy.ops.text.open(filepath=path)        
+                        selected_script = bpy.data.texts[selected_tool]        
+                        text = bpy.data.texts[selected_tool]
+                        ctx = bpy.context.copy()
+                        ctx['edit_text'] = text
+                        bpy.ops.text.run_script(ctx)
+                        text.use_module = True
             
             #install                     
             if installatindex == True:
