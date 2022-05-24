@@ -105,6 +105,63 @@ class AlignZ(bpy.types.Operator):
                 obj.location[2] = active.location[2]
                 
         return {"FINISHED"}
+    
+class SpaceXWithCam(bpy.types.Operator):
+    bl_idname = "scene.spacexwithcam"
+    bl_label = "Center X Location"
+    
+    def execute(self, context):
+        selected = bpy.context.selected_objects
+        active = bpy.context.object
+        dist = abs(selected[0].location[0] - selected[1].location[0])
+        print(dist)
+        cursorx = bpy.context.scene.cursor.location[0]
+        if selected[0].location[0] < selected[1].location[0]:
+            selected[0].location[0] = cursorx - (dist/2)
+            selected[1].location[0] = cursorx + (dist/2)
+        else:
+            selected[1].location[0] = cursorx - (dist/2)
+            selected[0].location[0] = cursorx + (dist/2)
+                
+        return {"FINISHED"}
+
+class SpaceYWithCam(bpy.types.Operator):
+    bl_idname = "scene.spaceywithcam"
+    bl_label = "Center Y Location"
+    
+    def execute(self, context):
+        selected = bpy.context.selected_objects
+        active = bpy.context.object
+        dist = abs(selected[0].location[1] - selected[1].location[1])
+        print(dist)
+        cursorx = bpy.context.scene.cursor.location[1]
+        if selected[0].location[1] < selected[1].location[1]:
+            selected[0].location[1] = cursorx - (dist/2)
+            selected[1].location[1] = cursorx + (dist/2)
+        else:
+            selected[1].location[1] = cursorx - (dist/2)
+            selected[0].location[1] = cursorx + (dist/2)
+                
+        return {"FINISHED"}
+
+class SpaceZWithCam(bpy.types.Operator):
+    bl_idname = "scene.spacezwithcam"
+    bl_label = "Center Z Location"
+    
+    def execute(self, context):
+        selected = bpy.context.selected_objects
+        active = bpy.context.object
+        dist = abs(selected[0].location[2] - selected[1].location[2])
+        print(dist)
+        cursorx = bpy.context.scene.cursor.location[2]
+        if selected[0].location[2] < selected[1].location[2]:
+            selected[0].location[2] = cursorx - (dist/2)
+            selected[1].location[2] = cursorx + (dist/2)
+        else:
+            selected[1].location[2] = cursorx - (dist/2)
+            selected[0].location[2] = cursorx + (dist/2)
+                
+        return {"FINISHED"}
 
 
 class RenderFull(bpy.types.Operator):
@@ -446,14 +503,21 @@ class QuickActions2(bpy.types.Panel):
         #layout.label(text="Actions")
         #row = layout.row()
         #row.operator("scene.storeimagesa")        
+#        row = layout.row()
+#        row.operator("scene.hdriworld")        
+#        row = layout.row()
+#        row.operator("scene.alignx")        
+#        row = layout.row()
+#        row.operator("scene.aligny")        
+#        row = layout.row()
+#        row.operator("scene.alignz")    
+        layout.label(text="Center Objects on 3D Cursor  ")    
         row = layout.row()
-        row.operator("scene.hdriworld")        
+        row.operator("scene.spacexwithcam")        
         row = layout.row()
-        row.operator("scene.alignx")        
+        row.operator("scene.spaceywithcam")        
         row = layout.row()
-        row.operator("scene.aligny")        
-        row = layout.row()
-        row.operator("scene.alignz")        
+        row.operator("scene.spacezwithcam")        
         row = layout.row()
         
 #        gridpackadded = False
@@ -480,3 +544,6 @@ bpy.utils.register_class(WM_OT_path_open)
 bpy.utils.register_class(AlignX)
 bpy.utils.register_class(AlignY)
 bpy.utils.register_class(AlignZ)
+bpy.utils.register_class(SpaceXWithCam)
+bpy.utils.register_class(SpaceYWithCam)
+bpy.utils.register_class(SpaceZWithCam)
