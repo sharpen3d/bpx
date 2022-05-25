@@ -1,5 +1,5 @@
 # bpx
-Blender Python Extensions and Asset Library created by Luke Stilson (sharpen3d)
+Blender 'Pixel Perfect' Extensions and Asset Library created by Luke Stilson (sharpen3d)
 
 This repo holds primarily python tools related to art creation in Blender
 It is recommended to use these scripts and associated files with the most recent stable version of Blender
