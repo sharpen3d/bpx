@@ -9,7 +9,8 @@ kmi.properties.name = "VIEW3D_MT_PIE_alignoptions"
 # spawn an edit mode selection pie (run while object is in edit mode to get a valid output)
 class AlignX(bpy.types.Operator):
     bl_idname = "scene.alignx"
-    bl_label = "Align X To Selected"
+    bl_label = "Align X To Active"
+    bl_description = "Align X values of selected objects to active object"
     
     def execute(self, context):
         selected = bpy.context.selected_objects
@@ -25,6 +26,7 @@ class AlignX(bpy.types.Operator):
 class AlignXCursor(bpy.types.Operator):
     bl_idname = "scene.aligncursorx"
     bl_label = "Align X To 3D Cursor"
+    bl_description = "Align X values of selected objects to 3D cursor"
     
     def execute(self, context):
         selected = bpy.context.selected_objects
@@ -38,7 +40,9 @@ class AlignXCursor(bpy.types.Operator):
     
 class AlignY(bpy.types.Operator):
     bl_idname = "scene.aligny"
-    bl_label = "Align Y To Selected"
+    bl_label = "Align Y To Active"
+    bl_description = "Align Y values of selected objects to active object"
+    bl_description = "Align Y values of selected objects to active object"
     
     def execute(self, context):
         selected = bpy.context.selected_objects
@@ -52,6 +56,7 @@ class AlignY(bpy.types.Operator):
 class AlignYCursor(bpy.types.Operator):
     bl_idname = "scene.aligncursory"
     bl_label = "Align Y To 3D Cursor"
+    bl_description = "Align Y values of selected objects to 3D cursor"
     
     def execute(self, context):
         selected = bpy.context.selected_objects
@@ -65,7 +70,8 @@ class AlignYCursor(bpy.types.Operator):
     
 class AlignZ(bpy.types.Operator):
     bl_idname = "scene.alignz"
-    bl_label = "Align Z To Selected"
+    bl_label = "Align Z To Active"
+    bl_description = "Align Z values of selected objects to active object"
     
     def execute(self, context):
         selected = bpy.context.selected_objects
@@ -79,6 +85,7 @@ class AlignZ(bpy.types.Operator):
 class AlignZCursor(bpy.types.Operator):
     bl_idname = "scene.aligncursorz"
     bl_label = "Align Z To 3D Cursor"
+    bl_description = "Align Z values of selected objects to 3D cursor"
     
     def execute(self, context):
         selected = bpy.context.selected_objects

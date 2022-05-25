@@ -8,107 +8,12 @@ fileBaseName = thisFileName.replace(".blend", "")
 currentPath = thisFilePath.replace(thisFileName, "")
 currentPath = currentPath[:-1]
 
-class AppendGridPack(bpy.types.Operator):
-    bl_idname = "scene.appendgridpack"
-    bl_label = "Append Grid Packing"
-    
-    def execute(self, context):
-        path = "\\\\NCFS1\\Dev\\Art\\_ArtistShareables_\\blenderTemplates\\packToGrid.blend"
-        subFolder = "\\Scene\\"
-        object = "packScene"
-
-        library = path + subFolder
-        xfilepath = path + subFolder + object
-
-        bpy.ops.wm.append(filename = object, filepath = xfilepath, directory = library)
-        
-        path = "\\\\NCFS1\\Dev\\Art\\_ArtistShareables_\\blenderTemplates\\packToGrid.blend"
-        subFolder = "\\WorkSpace\\"
-        object = "packing"
-
-        library = path + subFolder
-        xfilepath = path + subFolder + object
-
-        bpy.ops.wm.append(filename = object, filepath = xfilepath, directory = library)
-        
-                       
-        return {"FINISHED"}
-
-class StoreImages2(bpy.types.Operator):
-    bl_idname = "scene.storeimagesa"
-    bl_label = "collect images in folder"
-    
-    def execute(self, context):
-        renderpath = currentPath+"//images\\"
-        bpy.context.scene.render.filepath = renderpath+"//render\\"
-        bpy.ops.render.render(animation=False, write_still=True, layer='', scene='Scene')
-        
-        for img in bpy.data.images:
-            if img.name != "Render Result":
-                img.reload()
-                img.filepath=renderpath+img.name+"."+img.file_format
-                img.save()
-                img.reload()
-                
-        return {"FINISHED"}
-    
-#class AlignX(bpy.types.Operator):
-#    bl_idname = "scene.alignx"
-#    bl_label = "Align X"
-#    
-#    def execute(self, context):
-#        selected = bpy.context.selected_objects
-#        active = bpy.context.object
-##        currentScale = [0] * (len(selected)+1)
-##        
-##        i = 0
-##        while i < len(selected):
-##            currentScale[i] = selected[i].scale[0]
-##            i=i+1
-##        
-##        bpy.ops.transform.resize(value=(0, 1, 1), orient_type='GLOBAL', orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL', constraint_axis=(True, False, False), mirror=False, use_proportional_edit=False, proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False, use_proportional_projected=False)
-##        
-##        x = 0
-##        while x < len(selected):
-##            selected[x].scale[0] = currentScale[x]
-##            x=x+1
-
-#        for obj in selected:
-#            if obj != bpy.context.object:
-#                obj.location[0] = active.location[0]
-
-#                
-#        return {"FINISHED"}
-#    
-#class AlignY(bpy.types.Operator):
-#    bl_idname = "scene.aligny"
-#    bl_label = "Align Y"
-#    
-#    def execute(self, context):
-#        selected = bpy.context.selected_objects
-#        active = bpy.context.object
-#        for obj in selected:
-#            if obj != bpy.context.object:
-#                obj.location[1] = active.location[1]
-#                
-#        return {"FINISHED"}
-#    
-#class AlignZ(bpy.types.Operator):
-#    bl_idname = "scene.alignz"
-#    bl_label = "Align Z"
-#    
-#    def execute(self, context):
-#        selected = bpy.context.selected_objects
-#        active = bpy.context.object
-#        for obj in selected:
-#            if obj != bpy.context.object:
-#                obj.location[2] = active.location[2]
-#                
-#        return {"FINISHED"}
-#    
+contrast = 0
+     
 class SpaceXWithCam(bpy.types.Operator):
     bl_idname = "scene.spacexwithcam"
     bl_label = "Center X Location"
+    bl_description = "Selection to cursor X (keep offset)"
     
     def execute(self, context):
         selected = bpy.context.selected_objects
@@ -128,6 +33,7 @@ class SpaceXWithCam(bpy.types.Operator):
 class SpaceYWithCam(bpy.types.Operator):
     bl_idname = "scene.spaceywithcam"
     bl_label = "Center Y Location"
+    bl_description = "Selection to cursor Y (keep offset)"
     
     def execute(self, context):
         selected = bpy.context.selected_objects
@@ -147,6 +53,7 @@ class SpaceYWithCam(bpy.types.Operator):
 class SpaceZWithCam(bpy.types.Operator):
     bl_idname = "scene.spacezwithcam"
     bl_label = "Center Z Location"
+    bl_description = "Selection to cursor Z (keep offset)"
     
     def execute(self, context):
         selected = bpy.context.selected_objects
@@ -167,6 +74,7 @@ class SpaceZWithCam(bpy.types.Operator):
 class RenderFull(bpy.types.Operator):
     bl_idname = "scene.renderfull"
     bl_label = "Render Frame"
+    bl_description = "Render frame at 100% render size"
     
     def execute(self, context):
         scene = bpy.context.scene
@@ -207,6 +115,7 @@ class RenderFull(bpy.types.Operator):
 class AnimFull(bpy.types.Operator):
     bl_idname = "scene.animfull"
     bl_label = "Render Animation"
+    bl_description = "Render animation at 100% render size"
     
     def execute(self, context):
         scene = bpy.context.scene
@@ -237,6 +146,7 @@ class AnimFull(bpy.types.Operator):
 class RenderPreviewSmall(bpy.types.Operator):
     bl_idname = "scene.renderpreviewsmall"
     bl_label = "25%"
+    bl_description = "Render frame at 25% render size"
     
     def execute(self, context):
         scene = bpy.context.scene
@@ -272,6 +182,7 @@ class RenderPreviewSmall(bpy.types.Operator):
 class RenderPreview(bpy.types.Operator):
     bl_idname = "scene.renderpreview"
     bl_label = "50%"
+    bl_description = "Render frame at 50% render size"
     
     def execute(self, context):
         scene = bpy.context.scene
@@ -309,6 +220,7 @@ class RenderPreview(bpy.types.Operator):
 class AnimPreviewSmall(bpy.types.Operator):
     bl_idname = "scene.animpreviewsmall"
     bl_label = "25%"
+    bl_description = "Render animation at 25% render size"
     
     def execute(self, context):
         scene = bpy.context.scene
@@ -338,6 +250,7 @@ class AnimPreviewSmall(bpy.types.Operator):
 class AnimPreview(bpy.types.Operator):
     bl_idname = "scene.animpreview"
     bl_label = "50%"
+    bl_description = "Render animation at 50% render size"
     
     def execute(self, context):
         scene = bpy.context.scene
@@ -367,6 +280,7 @@ class AnimPreview(bpy.types.Operator):
 class CreateHDRI(bpy.types.Operator):
     bl_idname = "scene.hdriworld"
     bl_label = "HDRI world setup"
+    bl_description = "Set up HDRI map nodes in World Shader Nodes"
 
     def execute(self, context):
 
@@ -406,6 +320,59 @@ class CreateHDRI(bpy.types.Operator):
 
         else:
             print("world nodes already created")
+        
+        return {"FINISHED"}
+
+class DisableCM(bpy.types.Operator):
+    bl_idname = "scene.disablecm"
+    bl_label = "Disable Color Management"
+    bl_description = "Set color management display device to NONE"
+
+    def execute(self, context):
+        bpy.context.scene.display_settings.display_device = 'None'
+        bpy.context.scene.view_settings.look = 'None'
+        bpy.context.scene.view_settings.exposure = 0
+        bpy.context.scene.view_settings.gamma = 1
+        bpy.context.scene.view_settings.use_curve_mapping = False
+        
+        return {"FINISHED"}
+
+class ResetCM(bpy.types.Operator):
+    bl_idname = "scene.resetcm"
+    bl_label = "Reset Color Management"
+    bl_description = "Set color management display device to sRGB"
+
+    def execute(self, context):
+        bpy.context.scene.display_settings.display_device = 'sRGB'
+        bpy.context.scene.view_settings.view_transform = 'Filmic'
+        bpy.context.scene.view_settings.exposure = 0
+        bpy.context.scene.view_settings.gamma = 1
+        bpy.context.scene.view_settings.use_curve_mapping = False
+        
+        return {"FINISHED"}
+    
+class BoostContrast(bpy.types.Operator):
+    bl_idname = "scene.boostcontrast"
+    bl_label = "Boost Contrast"
+    bl_description = "Toggle through color management contrast options"
+
+    def execute(self, context):
+        global contrast
+        
+        if contrast == 0:
+            bpy.context.scene.view_settings.look = 'Medium High Contrast'
+        elif contrast == 1:
+            bpy.context.scene.view_settings.look = 'High Contrast'
+        elif contrast == 2:
+            bpy.context.scene.view_settings.look = 'Very High Contrast'
+        elif contrast == 3:
+            bpy.context.scene.view_settings.look = 'None'
+        elif contrast == 4:
+            bpy.context.scene.view_settings.look = 'Medium High Contrast'
+    
+        contrast = contrast+1
+        if contrast > 4:
+            contrast = 0
         
         return {"FINISHED"}
     
@@ -496,21 +463,41 @@ class QuickActions2(bpy.types.Panel):
 
     
     def draw(self, context):        
+        global contrast
+        setContrast = "Contrast is Standard"
+        buttonContrast = "Boost Contrast"
+        
+        if contrast == 0:
+            setContrast = "Contrast is Standard"
+            buttonContrast = "Boost Contrast"
+        elif contrast == 1:
+            setContrast = "Contrast is Medium High"
+            buttonContrast = "Boost Contrast"
+        elif contrast == 2:
+            setContrast = "High Contrast"
+            buttonContrast = "Boost Contrast"
+        elif contrast == 3:
+            setContrast = "Very High Contrast"
+            buttonContrast = "Reset Contrast"
+        
         scene = bpy.context.scene
         render = scene.render        
         layout = self.layout
 
-        #layout.label(text="Actions")
-        #row = layout.row()
-        #row.operator("scene.storeimagesa")        
-#        row = layout.row()
-#        row.operator("scene.hdriworld")        
-#        row = layout.row()
-#        row.operator("scene.alignx")        
-#        row = layout.row()
-#        row.operator("scene.aligny")        
-#        row = layout.row()
-#        row.operator("scene.alignz")    
+        layout.label(text="Scene Color")
+        row = layout.row()       
+        row.operator("scene.hdriworld")   
+        
+        layout.label(text="Color Management")  
+        row = layout.row()       
+        row.operator("scene.disablecm")  
+        row = layout.row()       
+        row.operator("scene.resetcm")  
+        row = layout.row()      
+        layout.label(text= setContrast)
+        row = layout.row() 
+        row.operator("scene.boostcontrast", text= buttonContrast)          
+    
         layout.label(text="Center Objects on 3D Cursor  ")    
         row = layout.row()
         row.operator("scene.spacexwithcam")        
@@ -520,14 +507,6 @@ class QuickActions2(bpy.types.Panel):
         row.operator("scene.spacezwithcam")        
         row = layout.row()
         
-#        gridpackadded = False
-#        for i in bpy.data.scenes:
-#            if i.name == "packScene":
-#                gridpackadded = True
-#            
-#        if gridpackadded == False:
-#            row.operator("scene.appendgridpack")        
-#            row = layout.row()
         
 bpy.utils.register_class(QuickActions)  
 bpy.utils.register_class(QuickActions2) 
@@ -537,13 +516,11 @@ bpy.utils.register_class(RenderPreview)
 bpy.utils.register_class(AnimFull)    
 bpy.utils.register_class(AnimPreviewSmall)  
 bpy.utils.register_class(AnimPreview)  
-bpy.utils.register_class(AppendGridPack)  
 bpy.utils.register_class(CreateHDRI)  
-bpy.utils.register_class(StoreImages2)
 bpy.utils.register_class(WM_OT_path_open)
-#bpy.utils.register_class(AlignX)
-#bpy.utils.register_class(AlignY)
-#bpy.utils.register_class(AlignZ)
 bpy.utils.register_class(SpaceXWithCam)
 bpy.utils.register_class(SpaceYWithCam)
 bpy.utils.register_class(SpaceZWithCam)
+bpy.utils.register_class(DisableCM)
+bpy.utils.register_class(ResetCM)
+bpy.utils.register_class(BoostContrast)

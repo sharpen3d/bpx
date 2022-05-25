@@ -150,6 +150,7 @@ class ortho_append(bpy.types.Operator):
 class release_tools(bpy.types.Operator):
     bl_idname = "scene.releasetools"
     bl_label = "Release All Tools"
+    bl_description = "Delete All Tools Scripts From File"
     
     def execute(self, context):
         for text in bpy.data.texts:
@@ -169,6 +170,7 @@ class release_tools(bpy.types.Operator):
 class append_button(bpy.types.Operator):
     bl_idname = "scene.appendbutton"
     bl_label = "Append Tools"
+    bl_description = "Append Selected Tools and Libraries"
     
     def execute(self, context):
         global selected_tool

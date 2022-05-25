@@ -28,6 +28,7 @@ class StoreImages(bpy.types.Operator):
 class MatchTexSize(bpy.types.Operator):
     bl_idname = "scene.matchtexsize"
     bl_label = "Match Texture Size"
+    bl_description = "Make this plane size match the given texture size above"
     
     def execute(self, context):
         selected = bpy.context.object
@@ -46,6 +47,7 @@ class MatchTexSize(bpy.types.Operator):
 class FixPix(bpy.types.Operator):
     bl_idname = "scene.fixpix"
     bl_label = "Fix Pixel Size"
+    bl_description = "Update this plane size to match current render and camera conditions"
     
     def execute(self, context):
         selected = bpy.context.object
@@ -72,6 +74,7 @@ class FixPix(bpy.types.Operator):
 class Button2(bpy.types.Operator):
     bl_idname = "scene.button2"
     bl_label = "add layer"
+    bl_description = "Add a new 2D plane in current scene"
 
     def execute(self, context):
         
@@ -105,6 +108,7 @@ class Button2(bpy.types.Operator):
 class SelectCam(bpy.types.Operator):
     bl_idname = "scene.selectcam"
     bl_label = "Select Camera"
+    bl_description = "Select the scene's active camera"
 
     def execute(self, context):
         bpy.ops.object.select_camera()
@@ -172,6 +176,7 @@ class SetMat(bpy.types.Operator):
 class ResetCam(bpy.types.Operator):
     bl_idname = "scene.resetcam"
     bl_label = "Make 2D Camera"
+    bl_description = "Reset camera rotations, set to orthographic size 10, place at 0,0,10 OR add new camera if no camera exists"
 
     def execute(self, context):
         

@@ -40,6 +40,7 @@ class MakeText(bpy.types.Operator):
 class UseAdvGeo(bpy.types.Operator):
     bl_idname = "scene.useadvgeo"
     bl_label = "Use Advanced Geometry"
+    bl_description = "Use Custom Geometry Nodes"
     
     def execute(self, context):
         text_tool = context.scene.text_tool
@@ -70,6 +71,7 @@ class UseAdvGeo(bpy.types.Operator):
 class SetText(bpy.types.Operator):
     bl_idname = "scene.settext"
     bl_label = "Edit Text"
+    bl_description = "Update Current Text"
     
     def execute(self, context):
         text_tool = context.scene.text_tool
@@ -85,6 +87,7 @@ class SetText(bpy.types.Operator):
 class CycleForward(bpy.types.Operator):
     bl_idname = "scene.cycleforward"
     bl_label = "Cycle To Next Font"
+    bl_description = "Next Font Loaded in File"
     
     def execute(self, context):
         text_tool = context.scene.text_tool  
@@ -113,6 +116,7 @@ class CycleForward(bpy.types.Operator):
 class CycleBackward(bpy.types.Operator):
     bl_idname = "scene.cyclebackward"
     bl_label = "Cycle To Previous Font"
+    bl_description = "Previous Font Loaded in File"
     
     def execute(self, context):
         text_tool = context.scene.text_tool  
@@ -172,6 +176,7 @@ class SetExtrude(bpy.types.Operator):
 class CopyToSelected(bpy.types.Operator):
     bl_idname = "scene.copytoselected"
     bl_label = "Copy Properties (Active To Selected)"
+    bl_description = "Copy the selected properties from the active object (last selected) to other selected objects"
     
     def execute(self, context):
         text_tool = context.scene.text_tool
