@@ -1,4 +1,4 @@
-# bpy
+# bpx
 Blender Python Extensions and Asset Library created by Luke Stilson (sharpen3d)
 
 This repo holds primarily python tools related to art creation in Blender
