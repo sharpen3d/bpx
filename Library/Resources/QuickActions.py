@@ -329,7 +329,8 @@ class DisableCM(bpy.types.Operator):
     bl_description = "Set color management display device to NONE"
 
     def execute(self, context):
-        bpy.context.scene.display_settings.display_device = 'None'
+        bpy.context.scene.display_settings.display_device = 'sRGB'
+        bpy.context.scene.view_settings.view_transform = 'Standard'
         bpy.context.scene.view_settings.look = 'None'
         bpy.context.scene.view_settings.exposure = 0
         bpy.context.scene.view_settings.gamma = 1
@@ -345,6 +346,7 @@ class ResetCM(bpy.types.Operator):
     def execute(self, context):
         bpy.context.scene.display_settings.display_device = 'sRGB'
         bpy.context.scene.view_settings.view_transform = 'Filmic'
+        bpy.context.scene.view_settings.look = 'None'
         bpy.context.scene.view_settings.exposure = 0
         bpy.context.scene.view_settings.gamma = 1
         bpy.context.scene.view_settings.use_curve_mapping = False
