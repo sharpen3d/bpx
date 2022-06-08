@@ -9,7 +9,7 @@ asset_libraries = filepaths.asset_libraries
 resources_path = ""
 verified_library_path = ""
 selected_tool = ""
-tools_list = ["2DTools.py", "WordArtist.py", "FileManager.py", "GeoEmitters.py", "GridPacker.py", "QuickActions.py"]
+tools_list = ["2DTools.py", "WordArtist.py", "FileManager.py", "GeoEmitters.py", "GridPacker.py", "QuickActions.py", "SymbolGridCreator.py"]
 
 class TestOpenTool(bpy.types.Operator):
     bl_idname = "scene.testopentool"
@@ -146,6 +146,22 @@ class ortho_append(bpy.types.Operator):
         bpy.data.node_groups["bpx_geo"].use_fake_user = True
               
         return {"FINISHED"}
+    
+class symbol_grid_append(bpy.types.Operator):
+    bl_idname = "scene.symbolgridappend"
+    bl_label = "append extra resources"
+    
+    def execute(self, context):
+        path = resources_path + "\\Extensions\\Resources.blend"
+        
+        subFolder = "\\NodeTree\\"
+        object = "bpx_symbolGrid"
+        library = path + subFolder
+        xfilepath = path + subFolder + object
+        bpy.ops.wm.append(filename = object, filepath = xfilepath, directory = library)
+        bpy.data.node_groups["bpx_symbolGrid"].use_fake_user = True
+              
+        return {"FINISHED"}
 
 class release_tools(bpy.types.Operator):
     bl_idname = "scene.releasetools"
@@ -254,6 +270,16 @@ class append_button(bpy.types.Operator):
                         ctx['edit_text'] = text
                         bpy.ops.text.run_script(ctx)
                         text.use_module = True
+
+            if index == 6:
+                if tm_tool.SymbolGridCreator == True:
+                    for text in bpy.data.texts:
+                        if text.name == "SymbolGridCreator.py":
+                            print("skipping Grid Creator, already installed")
+                            break
+                    else:
+                        installatindex = True  
+                        bpy.ops.scene.symbolgridappend()
             
             #install                     
             if installatindex == True:
@@ -355,6 +381,16 @@ class resources_panel(bpy.types.Panel):
                 break            
         else:            
             row.prop(tm_tool, "QuickActions", text=label0)
+            
+        #Grid Packer
+        row = layout.row()        
+        label0 = "Symbol Grid Creator"
+        for i in bpy.data.texts:
+            if i.name == tools_list[6]:
+                self.layout.label(text=label0 + " (installed)", icon = 'CHECKBOX_HLT')
+                break            
+        else:            
+            row.prop(tm_tool, "SymbolGridCreator", text=label0)
         
 
 #def register():
@@ -395,6 +431,11 @@ class TM_settings(bpy.types.PropertyGroup):
         default=False
     )
     
+    SymbolGridCreator: bpy.props.BoolProperty(
+        name=tools_list[5],
+        default=False
+    )
+    
 classes = (
     resources_panel,
     append_button,
@@ -407,6 +448,7 @@ classes = (
     wordart_append,
     release_tools,
     AppendNodes,
+    symbol_grid_append,
 )
 
 def register():
