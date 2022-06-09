@@ -243,7 +243,7 @@ class append_button(bpy.types.Operator):
             if index == 4:
                 if tm_tool.GridPacker == True:
                     for text in bpy.data.texts:
-                        if text.name == "2DTools.py":
+                        if text.name == "GridPacker.py":
                             print("skipping 2D Tools, already installed")
                             break
                     else:
