@@ -9,6 +9,40 @@ currentPath = thisFilePath.replace(thisFileName, "")
 currentPath = currentPath[:-1]
 
 contrast = 0
+
+class EmptyToArmature(bpy.types.Operator):
+    bl_idname = "scene.emptytoarmature"
+    bl_label = "Make Armature Structure"
+    bl_description = "Add Armature structure to object and children"
+    
+    def execute(self, context):
+        active = bpy.context.object
+        rootName = active.name
+        loc = active.location
+
+        bpy.ops.object.armature_add(enter_editmode=True, align='WORLD', location=(loc), scale=(1, 1, 1))
+
+
+        i=0
+        while i < len(active.children):
+            print(active.name)
+            loc = active.children[i].matrix_world.translation
+            #rot = active.children[i].matrix_world.rotation
+            bpy.context.scene.cursor.location = loc
+            newBone = bpy.ops.armature.bone_primitive_add()
+            bpy.ops.armature.select_more()
+            boneName = bpy.context.selected_bones[0].name
+            bpy.context.object.data.edit_bones[boneName].parent = bpy.context.object.data.edit_bones['Bone']
+            
+            #make recursive
+            #make affect scene?
+            #copy animation?
+            
+            i += 1
+        
+        bpy.ops.object.editmode_toggle()
+                
+        return {"FINISHED"}
      
 class SpaceXWithCam(bpy.types.Operator):
     bl_idname = "scene.spacexwithcam"
@@ -485,6 +519,10 @@ class QuickActions2(bpy.types.Panel):
         scene = bpy.context.scene
         render = scene.render        
         layout = self.layout
+        
+        layout.label(text="Scene Rig")
+        row = layout.row()       
+        row.operator("scene.emptytoarmature")   
 
         layout.label(text="Scene Color")
         row = layout.row()       
@@ -511,6 +549,7 @@ class QuickActions2(bpy.types.Panel):
         
         
 bpy.utils.register_class(QuickActions)  
+bpy.utils.register_class(EmptyToArmature)  
 bpy.utils.register_class(QuickActions2) 
 bpy.utils.register_class(RenderFull)  
 bpy.utils.register_class(RenderPreviewSmall)  

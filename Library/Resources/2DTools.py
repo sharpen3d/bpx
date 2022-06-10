@@ -5,6 +5,122 @@ thisFileName = bpy.path.basename(bpy.context.blend_data.filepath)
 currentPath = thisFilePath.replace(thisFileName, "")
 currentPath = currentPath[:-1]
 
+class PivotMenu(bpy.types.Menu):
+    bl_label = "Set Pivot"
+    bl_idname = "PIVOT_MT_pivotmenu"
+
+    def draw(self, context):
+        layout = self.layout
+
+        layout.operator("scene.pivotcenter")
+        layout.operator("scene.pivotbottomleft")
+        layout.operator("scene.pivotbottomright")
+        layout.operator("scene.pivottopleft")
+        layout.operator("scene.pivottopright")
+        layout.operator("scene.pivotleftcenter")
+        layout.operator("scene.pivottopcenter")
+        layout.operator("scene.pivotrightcenter")
+        layout.operator("scene.pivotbottomcenter")
+
+class ShowPivotMenu(bpy.types.Operator):
+    bl_idname = "scene.showpivotmenu"
+    bl_label = "PivotMenu"
+    
+    def execute(self, context):
+        bpy.ops.wm.call_menu(name=PivotMenu.bl_idname)
+                
+        return {"FINISHED"}
+    
+class PivotCenter(bpy.types.Operator):
+    bl_idname = "scene.pivotcenter"
+    bl_label = "Centered"
+    
+    def execute(self, context):
+        bpy.context.object.modifiers["GeometryNodes"]["Input_25"] = 0
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.editmode_toggle()                
+        return {"FINISHED"}
+
+class PivotBottomLeft(bpy.types.Operator):
+    bl_idname = "scene.pivotbottomleft"
+    bl_label = "Bottom-Left"
+    
+    def execute(self, context):
+        bpy.context.object.modifiers["GeometryNodes"]["Input_25"] = 1
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.editmode_toggle()  
+        return {"FINISHED"}
+    
+class PivotBottomRight(bpy.types.Operator):
+    bl_idname = "scene.pivotbottomright"
+    bl_label = "Bottom-Right"
+    
+    def execute(self, context):
+        bpy.context.object.modifiers["GeometryNodes"]["Input_25"] = 2
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.editmode_toggle()                
+        return {"FINISHED"}
+    
+class PivotTopLeft(bpy.types.Operator):
+    bl_idname = "scene.pivottopleft"
+    bl_label = "Top-Left"
+    
+    def execute(self, context):
+        bpy.context.object.modifiers["GeometryNodes"]["Input_25"] = 3
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.editmode_toggle()                
+        return {"FINISHED"}
+    
+class PivotTopRight(bpy.types.Operator):
+    bl_idname = "scene.pivottopright"
+    bl_label = "Top-Right"
+    
+    def execute(self, context):
+        bpy.context.object.modifiers["GeometryNodes"]["Input_25"] = 4
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.editmode_toggle()                
+        return {"FINISHED"}
+
+class PivotLeftCenter(bpy.types.Operator):
+    bl_idname = "scene.pivotleftcenter"
+    bl_label = "Left-Center"
+    
+    def execute(self, context):
+        bpy.context.object.modifiers["GeometryNodes"]["Input_25"] = 5
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.editmode_toggle()                
+        return {"FINISHED"}
+
+class PivotTopCenter(bpy.types.Operator):
+    bl_idname = "scene.pivottopcenter"
+    bl_label = "Top-Center"
+    
+    def execute(self, context):
+        bpy.context.object.modifiers["GeometryNodes"]["Input_25"] = 6
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.editmode_toggle()                
+        return {"FINISHED"}
+
+class PivotRightCenter(bpy.types.Operator):
+    bl_idname = "scene.pivotrightcenter"
+    bl_label = "Right-Center"
+    
+    def execute(self, context):
+        bpy.context.object.modifiers["GeometryNodes"]["Input_25"] = 7
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.editmode_toggle()                
+        return {"FINISHED"}
+    
+class PivotBottomCenter(bpy.types.Operator):
+    bl_idname = "scene.pivotbottomcenter"
+    bl_label = "Bottom-Center"
+    
+    def execute(self, context):
+        bpy.context.object.modifiers["GeometryNodes"]["Input_25"] = 8
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.editmode_toggle()                
+        return {"FINISHED"}
+
 #turned off
 class StoreImages(bpy.types.Operator):
     bl_idname = "scene.storeimages"
@@ -110,7 +226,7 @@ class Button2(bpy.types.Operator):
     
 class ScreenLayout(bpy.types.Operator):
     bl_idname = "scene.screenlayout"
-    bl_label = "Make Screen Layout"
+    bl_label = "Rig Screen Layout"
     bl_description = "Add Empties defining screen size in Units"
 
     def execute(self, context):
@@ -183,7 +299,7 @@ class LayoutRig(bpy.types.Operator):
             
             bpy.context.object.name = pointName
             #bpy.types.CollectionObjects.link()
-            bpy.ops.object.move_to_collection(collection_index=0)
+            #bpy.ops.object.move_to_collection(collection_index=0)
             
             bpy.context.object.parent = worldCenter
             bpy.context.object.matrix_parent_inverse = worldCenter.matrix_world.inverted()
@@ -397,7 +513,31 @@ class Selected(bpy.types.Panel):
                                 row.prop(geo, '["Input_2"]', text = "match cam size")
                                 
                                 row = layout.row()
-                                row.operator("scene.layoutrig") 
+                                row.operator("scene.layoutrig")
+                                
+                                if geo["Input_25"] == 0:
+                                    currentPivot = "Centered"
+                                elif geo["Input_25"] == 1:
+                                    currentPivot = "Bottom-Left"
+                                elif geo["Input_25"] == 2:
+                                    currentPivot = "Bottom-Right"
+                                elif geo["Input_25"] == 3:
+                                    currentPivot = "Top-Left"
+                                elif geo["Input_25"] == 4:
+                                    currentPivot = "Top-Right"
+                                elif geo["Input_25"] == 5:
+                                    currentPivot = "Left-Center"
+                                elif geo["Input_25"] == 6:
+                                    currentPivot = "Top-Center"
+                                elif geo["Input_25"] == 7:
+                                    currentPivot = "Right-Center"
+                                else:
+                                    currentPivot = "Bottom-Center"
+                                
+                                row = layout.row()
+                                self.layout.label(text= "Pivot:")
+                                row = layout.row()
+                                row.operator("scene.showpivotmenu", text=currentPivot) 
                                                 
                                 #row = layout.row()
                                 #row.operator("scene.editselected")
@@ -479,5 +619,18 @@ def register():
     bpy.utils.register_class(FixPix)
     bpy.utils.register_class(LayoutRig)
     bpy.utils.register_class(ScreenLayout)
+    bpy.utils.register_class(PivotMenu)
+    bpy.utils.register_class(ShowPivotMenu)
+    
+    #Pivot Menu
+    bpy.utils.register_class(PivotCenter)
+    bpy.utils.register_class(PivotBottomLeft)
+    bpy.utils.register_class(PivotBottomRight)
+    bpy.utils.register_class(PivotTopLeft)
+    bpy.utils.register_class(PivotTopRight)
+    bpy.utils.register_class(PivotLeftCenter)
+    bpy.utils.register_class(PivotTopCenter)
+    bpy.utils.register_class(PivotRightCenter)
+    bpy.utils.register_class(PivotBottomCenter)
     
 register()
