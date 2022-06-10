@@ -21,6 +21,33 @@ class PivotMenu(bpy.types.Menu):
         layout.operator("scene.pivottopcenter")
         layout.operator("scene.pivotrightcenter")
         layout.operator("scene.pivotbottomcenter")
+        
+class MatMenu(bpy.types.Panel):
+    bl_label = "Set Pivot"
+    bl_idname = "MAT_PT_matmenu"
+    bl_options = {'INSTANCED'}
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'WINDOW'
+    is_popover = True
+
+    def draw(self, context):
+        layout = self.layout
+        row = layout.row
+        column = layout.column
+
+        selected = bpy.context.object
+        if (len(selected.material_slots) > 0):
+            for node in selected.material_slots[0].material.node_tree.nodes:
+                if node.name == "bpy_TransparentImage":                                        
+                    tree = selected.material_slots[0].material.node_tree
+                    imagenode = selected.material_slots[0].material.node_tree.nodes['bpy_TransparentImage'] 
+                    
+                    row = layout.row()
+                    layout.label(text="Image Texture:")
+                    layout.template_node_view(tree, imagenode, imagenode.inputs["ImageColor"])
+                    row = layout.row()
+                    
+                    break 
 
 class ShowPivotMenu(bpy.types.Operator):
     bl_idname = "scene.showpivotmenu"
@@ -28,6 +55,15 @@ class ShowPivotMenu(bpy.types.Operator):
     
     def execute(self, context):
         bpy.ops.wm.call_menu(name=PivotMenu.bl_idname)
+                
+        return {"FINISHED"}
+    
+class ShowMatMenu(bpy.types.Operator):
+    bl_idname = "scene.showmatmenu"
+    bl_label = "PivotMenu"
+    
+    def execute(self, context):
+        bpy.ops.wm.call_panel(name=MatMenu.bl_idname)
                 
         return {"FINISHED"}
     
@@ -512,9 +548,6 @@ class Selected(bpy.types.Panel):
                                 row = layout.row()
                                 row.prop(geo, '["Input_2"]', text = "match cam size")
                                 
-                                row = layout.row()
-                                row.operator("scene.layoutrig")
-                                
                                 if geo["Input_25"] == 0:
                                     currentPivot = "Centered"
                                 elif geo["Input_25"] == 1:
@@ -538,6 +571,16 @@ class Selected(bpy.types.Panel):
                                 self.layout.label(text= "Pivot:")
                                 row = layout.row()
                                 row.operator("scene.showpivotmenu", text=currentPivot) 
+                                
+                                row = layout.row()
+                                self.layout.label(text= "Texture:")
+                                row = layout.row()
+                                row.operator("scene.showmatmenu", text="Set Texture") 
+                                
+                                row = layout.row()
+                                self.layout.label(text= "Rigging:")
+                                row = layout.row()
+                                row.operator("scene.layoutrig")
                                                 
                                 #row = layout.row()
                                 #row.operator("scene.editselected")
@@ -545,23 +588,23 @@ class Selected(bpy.types.Panel):
                                 #row.operator("scene.canvassize")
                                 #row = layout.row()
                                 
-                                selected = bpy.context.object
-                                if (len(selected.material_slots) > 0):
-                                    for node in selected.material_slots[0].material.node_tree.nodes:
-                                        if node.name == "bpy_TransparentImage":                                        
-                                            tree = selected.material_slots[0].material.node_tree
-                                            imagenode = selected.material_slots[0].material.node_tree.nodes['bpy_TransparentImage'] 
-                                            
-                                            row = layout.row()
-                                            layout.label(text="Image Texture:")
+#                                selected = bpy.context.object
+#                                if (len(selected.material_slots) > 0):
+#                                    for node in selected.material_slots[0].material.node_tree.nodes:
+#                                        if node.name == "bpy_TransparentImage":                                        
+#                                            tree = selected.material_slots[0].material.node_tree
+#                                            imagenode = selected.material_slots[0].material.node_tree.nodes['bpy_TransparentImage'] 
+#                                            
+#                                            row = layout.row()
+#                                            layout.label(text="Image Texture:")
 
-                                            row = layout.row()
-                                            layout.template_node_view(tree, imagenode, imagenode.inputs["ImageColor"])
-                                            
-                                            row = layout.row()
-                                            row.operator("scene.matchtexsize") 
-                                            
-                                            break 
+#                                            row = layout.row()
+#                                            layout.template_node_view(tree, imagenode, imagenode.inputs["ImageColor"])
+#                                            
+#                                            row = layout.row()
+#                                            row.operator("scene.matchtexsize") 
+#                                            
+#                                            break 
                                     
                     
 class MyOptions(bpy.types.Panel):
@@ -621,6 +664,8 @@ def register():
     bpy.utils.register_class(ScreenLayout)
     bpy.utils.register_class(PivotMenu)
     bpy.utils.register_class(ShowPivotMenu)
+    bpy.utils.register_class(MatMenu)
+    bpy.utils.register_class(ShowMatMenu)
     
     #Pivot Menu
     bpy.utils.register_class(PivotCenter)
