@@ -94,6 +94,9 @@ class Button2(bpy.types.Operator):
             geo["Input_20"] = xVal
             geo["Input_21"] = yVal
             geo["Input_22"] = scale
+            geo["Input_26"] = bpy.context.object
+            geo["Output_23_attribute_name"] = "pointPosition"
+            geo["Output_27_attribute_name"] = "pointCenter"
             
             bpy.ops.scene.setmat()
         except:
@@ -103,6 +106,92 @@ class Button2(bpy.types.Operator):
         #solidName = bpy.context.scene["bpxName"]
         #bpy.ops.object.move_to_collection(collection_index=0, is_new=True, new_collection_name= solidName)
                 
+        return {"FINISHED"}
+    
+class ScreenLayout(bpy.types.Operator):
+    bl_idname = "scene.screenlayout"
+    bl_label = "Make Screen Layout"
+    bl_description = "Add Empties defining screen size in Units"
+
+    def execute(self, context):
+        scene = bpy.ops.scene
+        scene.button2()
+        print(bpy.context.object.name)
+        bpy.context.object.modifiers["GeometryNodes"]["Input_24"] = 1
+        bpy.context.object.modifiers["GeometryNodes"]["Input_2"] = 1
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.editmode_toggle()
+        scene.layoutrig()
+        bpy.ops.object.delete(use_global=True)
+        
+        return {"FINISHED"}
+    
+class LayoutRig(bpy.types.Operator):
+    bl_idname = "scene.layoutrig"
+    bl_label = "Make Layout Rig"
+    bl_description = "add empties to each point of the selected solid"
+
+    def execute(self, context):
+        selected = bpy.context.view_layer.objects.active
+        symbolGridData = selected.evaluated_get(bpy.context.evaluated_depsgraph_get()).data
+        
+        centerPos = symbolGridData.attributes["pointCenter"].data[0].vector
+                
+        bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD', location=(centerPos), scale=(1, 1, 1))
+        worldCenter = bpy.context.object
+        bpy.context.object.name = "LayoutRig_Root"
+        #bpy.ops.object.move_to_collection(collection_index=0, is_new=True, new_collection_name= "EmptyRig")
+        
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.context.view_layer.objects.active = selected
+        selected.select_set(True)
+
+        i = 0
+        while i < len(symbolGridData.attributes["pointPosition"].data):
+            selected = bpy.context.view_layer.objects.active
+            symbolGridData = selected.evaluated_get(bpy.context.evaluated_depsgraph_get()).data
+            
+            try:
+                pointPosition = symbolGridData.attributes["pointPosition"].data[i].vector
+                bpy.ops.object.empty_add(type='PLAIN_AXES', align='WORLD', location=(pointPosition), scale=(1, 1, 1))
+                
+                pointName = "LayoutPoint"
+                
+                if i == 0:
+                    pointName = "BottomLeft"
+                elif i == 1:
+                    pointName = "BottomRight"
+                elif i == 2:
+                    pointName = "TopLeft"
+                elif i == 3:
+                    pointName = "TopRight"
+                elif i == 4:
+                    pointName = "LeftCenter"
+                elif i == 5:
+                    pointName = "BottomCenter"
+                elif i == 6:
+                    pointName = "RightCenter"
+                elif i == 7:
+                    pointName = "TopCenter"
+                elif i == 8:
+                    pointName = "Center"
+            
+            except:
+                print("no more data points")
+                break;
+                
+            
+            bpy.context.object.name = pointName
+            #bpy.types.CollectionObjects.link()
+            bpy.ops.object.move_to_collection(collection_index=0)
+            
+            bpy.context.object.parent = worldCenter
+            bpy.context.object.matrix_parent_inverse = worldCenter.matrix_world.inverted()
+            
+            bpy.ops.object.select_all(action='DESELECT')
+            bpy.context.view_layer.objects.active = selected
+            selected.select_set(True)
+            i += 1
         return {"FINISHED"}
     
 class SelectCam(bpy.types.Operator):
@@ -306,6 +395,9 @@ class Selected(bpy.types.Panel):
                                 #should be toggle checkbox
                                 row = layout.row()
                                 row.prop(geo, '["Input_2"]', text = "match cam size")
+                                
+                                row = layout.row()
+                                row.operator("scene.layoutrig") 
                                                 
                                 #row = layout.row()
                                 #row.operator("scene.editselected")
@@ -367,6 +459,9 @@ class MyOptions(bpy.types.Panel):
         #row.operator("scene.button1")
         row = layout.row()
         row.operator("scene.selectcam")
+        
+        row = layout.row()
+        row.operator("scene.screenlayout")
         #row = layout.row()     
         #row.operator("scene.storeimages")
         #row = layout.row()     
@@ -382,5 +477,7 @@ def register():
     bpy.utils.register_class(SetMat)
     bpy.utils.register_class(MatchTexSize)
     bpy.utils.register_class(FixPix)
+    bpy.utils.register_class(LayoutRig)
+    bpy.utils.register_class(ScreenLayout)
     
 register()
