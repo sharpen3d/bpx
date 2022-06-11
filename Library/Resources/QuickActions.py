@@ -47,6 +47,10 @@ class RecursiveArmature(bpy.types.Operator):
             
             #select new bone
             bpy.ops.armature.select_more()
+            bpy.ops.object.mode_set(mode='POSE')
+            bpy.context.object.data.bones.active = bpy.context.selected_pose_bones[0].bone
+            bpy.context.active_pose_bone.custom_shape = bpy.data.objects["bpx_squareBoneShape"]
+            bpy.ops.object.mode_set(mode='EDIT')
             
             #get selected bone name
             bpy.context.selected_bones[0].name = active.children[i].name
@@ -97,18 +101,77 @@ class EmptyToArmature(bpy.types.Operator):
         #option to remove mesh constraints?
         #option to join meshes?
         
+        #check if file has custom bones
+        for i in bpy.data.scenes:
+            if i.name == "bpx_boneShapes":
+                break;
+        else:
+            bpy.ops.scene.createbones()
+        
         #add root armature bone
         bpy.ops.object.armature_add(enter_editmode=True, align='WORLD', location=(loc), scale=(1, 1, 1))
         armatureName = bpy.context.object
         bpy.context.object.name = active.name + "_armature"
         bpy.context.object.data.name = active.name + "_armature"
         bpy.ops.armature.select_more()
+        bpy.ops.object.mode_set(mode='POSE')
+        bpy.context.active_pose_bone.custom_shape = bpy.data.objects["bpx_circleBoneShape"]
+        bpy.ops.object.mode_set(mode='EDIT')
         bpy.context.selected_bones[0].name = active.name
         parentBoneName = bpy.context.selected_bones[0].name
         
         bpy.ops.scene.recursivearmature()        
         bpy.ops.object.editmode_toggle()
         bpy.context.scene.cursor.location = (0,0,0)
+                
+        return {"FINISHED"}
+
+class CreateBones(bpy.types.Operator):
+    bl_idname = "scene.createbones"
+    bl_label = "Make Custom Bones"
+    
+    def execute(self, context):
+        mainScene = bpy.context.scene
+        bpy.ops.scene.new(type='NEW')
+        bpy.context.scene.name = "bpx_boneShapes"
+
+        #create bone shape
+        bpy.ops.curve.primitive_nurbs_path_add(radius=0.25, enter_editmode=True, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+        bpy.ops.curve.primitive_nurbs_path_add(radius=0.25, enter_editmode=True, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+        bpy.ops.transform.rotate(value=1.5708, orient_axis='Z')
+        bpy.ops.curve.primitive_nurbs_path_add(radius=0.25, enter_editmode=True, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+        bpy.ops.transform.rotate(value=1.5708, orient_axis='Y')
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.convert(target='MESH')
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.mesh.dissolve_limited(angle_limit=0.174533)
+        bpy.ops.mesh.primitive_cube_add(size=0.5, enter_editmode=False, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+        bpy.ops.mesh.delete(type='ONLY_FACE')
+        bpy.ops.object.editmode_toggle()
+        bpy.context.object.name = "bpx_squareBoneShape"
+        #bpy.data.objects['bpx_squareBoneShape'].use_fake_user = True
+
+        bpy.ops.curve.primitive_bezier_circle_add(radius=0.25, enter_editmode=True, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+        bpy.ops.curve.primitive_bezier_circle_add(radius=0.25, enter_editmode=True, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+        bpy.ops.transform.rotate(value=1.5708, orient_axis='X')
+        bpy.ops.curve.primitive_bezier_circle_add(radius=0.25, enter_editmode=True, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+        bpy.ops.transform.rotate(value=1.5708, orient_axis='Y')
+        bpy.ops.curve.primitive_nurbs_path_add(radius=0.25, enter_editmode=True, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+        bpy.ops.curve.primitive_nurbs_path_add(radius=0.25, enter_editmode=True, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+        bpy.ops.transform.rotate(value=1.5708, orient_axis='Z')
+        bpy.ops.curve.primitive_nurbs_path_add(radius=0.25, enter_editmode=True, align='WORLD', location=(0, 0, 0), scale=(1, 1, 1))
+        bpy.ops.transform.rotate(value=1.5708, orient_axis='Y')
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.object.convert(target='MESH')
+        bpy.ops.object.editmode_toggle()
+        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.mesh.dissolve_limited(angle_limit=0.174533)
+        bpy.ops.object.editmode_toggle()
+        bpy.context.object.name = "bpx_circleBoneShape"
+        #bpy.data.objects['bpx_circleBoneShape'].use_fake_user = True
+        
+        bpy.context.window.scene = mainScene
                 
         return {"FINISHED"}
      
@@ -634,3 +697,4 @@ bpy.utils.register_class(SpaceZWithCam)
 bpy.utils.register_class(DisableCM)
 bpy.utils.register_class(ResetCM)
 bpy.utils.register_class(BoostContrast)
+bpy.utils.register_class(CreateBones)
