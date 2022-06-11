@@ -12,6 +12,7 @@ contrast = 0
 parentBoneName = ""
 savedBoneName = ""
 acitve = None
+armatureName = None
 
 class RecursiveArmature(bpy.types.Operator):
     bl_idname = "scene.recursivearmature"
@@ -27,6 +28,7 @@ class RecursiveArmature(bpy.types.Operator):
         scene = bpy.context.scene
         global active
         global parentBoneName
+        global armatureName
         
         rootName = active.name
         print(active.name)
@@ -47,16 +49,26 @@ class RecursiveArmature(bpy.types.Operator):
             bpy.ops.armature.select_more()
             
             #get selected bone name
+            bpy.context.selected_bones[0].name = active.children[i].name
             boneName = bpy.context.selected_bones[0].name
             
             #set new bone parent
             bpy.context.object.data.edit_bones[boneName].parent = bpy.context.object.data.edit_bones[parentBoneName]
             
+            #add modifier to active
+            if (active.children[i].type == 'MESH'):
+                active.children[i].modifiers.new("Armature", 'ARMATURE')
+                active.children[i].modifiers["Armature"].object = armatureName
+                new_vertex_group = active.children[i].vertex_groups.new(name=boneName)
+                vert = 0
+                for x in active.children[i].data.vertices:
+                    new_vertex_group.add([vert], 1.0, 'ADD')
+                    vert += 1
+            
             #check if child has children
             if len(active.children[i].children) > 0:
                 active = active.children[i]
                 parentBoneName = boneName
-                print(i)
                 bpy.ops.scene.recursivearmature()
                 active = active.parent
                 parentBoneName = bpy.context.object.data.edit_bones[boneName].parent.name
@@ -74,18 +86,29 @@ class EmptyToArmature(bpy.types.Operator):
         scene = bpy.context.scene
         global active
         global parentBoneName
+        global armatureName
         
         active = bpy.context.object
         rootName = active.name
         loc = active.location
         
+        #auto scene root?
+        #check if root is mesh?
+        #option to remove mesh constraints?
+        #option to join meshes?
+        
         #add root armature bone
         bpy.ops.object.armature_add(enter_editmode=True, align='WORLD', location=(loc), scale=(1, 1, 1))
+        armatureName = bpy.context.object
+        bpy.context.object.name = active.name + "_armature"
+        bpy.context.object.data.name = active.name + "_armature"
         bpy.ops.armature.select_more()
+        bpy.context.selected_bones[0].name = active.name
         parentBoneName = bpy.context.selected_bones[0].name
         
         bpy.ops.scene.recursivearmature()        
         bpy.ops.object.editmode_toggle()
+        bpy.context.scene.cursor.location = (0,0,0)
                 
         return {"FINISHED"}
      
