@@ -9,37 +9,82 @@ currentPath = thisFilePath.replace(thisFileName, "")
 currentPath = currentPath[:-1]
 
 contrast = 0
+parentBoneName = ""
+savedBoneName = ""
+acitve = None
+
+class RecursiveArmature(bpy.types.Operator):
+    bl_idname = "scene.recursivearmature"
+    bl_label = "Make Armature Structure"
+    bl_description = ""
+    
+    def execute(self, context):
+        #TODO
+        #name bones
+        #transfer animation
+        #make Unity Panel
+        
+        scene = bpy.context.scene
+        global active
+        global parentBoneName
+        
+        rootName = active.name
+        print(active.name)
+
+        i=0
+        while i < len(active.children):
+            
+            #set location to child
+            loc = active.children[i].matrix_world.translation
+            
+            #set cursor to childLoc
+            bpy.context.scene.cursor.location = loc
+            
+            #add bone at cursor
+            newBone = bpy.ops.armature.bone_primitive_add()
+            
+            #select new bone
+            bpy.ops.armature.select_more()
+            
+            #get selected bone name
+            boneName = bpy.context.selected_bones[0].name
+            
+            #set new bone parent
+            bpy.context.object.data.edit_bones[boneName].parent = bpy.context.object.data.edit_bones[parentBoneName]
+            
+            #check if child has children
+            if len(active.children[i].children) > 0:
+                active = active.children[i]
+                parentBoneName = boneName
+                print(i)
+                bpy.ops.scene.recursivearmature()
+                active = active.parent
+                parentBoneName = bpy.context.object.data.edit_bones[boneName].parent.name
+                
+            i += 1
+                
+        return {"FINISHED"}
 
 class EmptyToArmature(bpy.types.Operator):
     bl_idname = "scene.emptytoarmature"
     bl_label = "Make Armature Structure"
-    bl_description = "Add Armature structure to object and children"
+    bl_description = "Make Armature structure on parented objects"
     
     def execute(self, context):
+        scene = bpy.context.scene
+        global active
+        global parentBoneName
+        
         active = bpy.context.object
         rootName = active.name
         loc = active.location
-
-        bpy.ops.object.armature_add(enter_editmode=True, align='WORLD', location=(loc), scale=(1, 1, 1))
-
-
-        i=0
-        while i < len(active.children):
-            print(active.name)
-            loc = active.children[i].matrix_world.translation
-            #rot = active.children[i].matrix_world.rotation
-            bpy.context.scene.cursor.location = loc
-            newBone = bpy.ops.armature.bone_primitive_add()
-            bpy.ops.armature.select_more()
-            boneName = bpy.context.selected_bones[0].name
-            bpy.context.object.data.edit_bones[boneName].parent = bpy.context.object.data.edit_bones['Bone']
-            
-            #make recursive
-            #make affect scene?
-            #copy animation?
-            
-            i += 1
         
+        #add root armature bone
+        bpy.ops.object.armature_add(enter_editmode=True, align='WORLD', location=(loc), scale=(1, 1, 1))
+        bpy.ops.armature.select_more()
+        parentBoneName = bpy.context.selected_bones[0].name
+        
+        bpy.ops.scene.recursivearmature()        
         bpy.ops.object.editmode_toggle()
                 
         return {"FINISHED"}
@@ -550,6 +595,7 @@ class QuickActions2(bpy.types.Panel):
         
 bpy.utils.register_class(QuickActions)  
 bpy.utils.register_class(EmptyToArmature)  
+bpy.utils.register_class(RecursiveArmature)  
 bpy.utils.register_class(QuickActions2) 
 bpy.utils.register_class(RenderFull)  
 bpy.utils.register_class(RenderPreviewSmall)  

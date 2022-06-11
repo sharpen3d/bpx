@@ -750,8 +750,8 @@ class SetEmpties(bpy.types.Operator):
 class LayoutHelper(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_category = "Layout Helper"
-    bl_label = "Layout Information"
+    bl_category = "Symbol Grids"
+    bl_label = "Grid Creator"
     bl_idname = "SCENE_PT_layout_LayoutHelper"
     
     def draw(self, context):
