@@ -458,6 +458,50 @@ class AppendTools(bpy.types.Operator):
         bpy.ops.wm.append(filename = object, filepath = xfilepath, directory = library)
                 
         return {"FINISHED"}
+    
+class MyOptions(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "2D Tools"
+    bl_label = "Composition"
+    bl_idname = "SCENE_PT_layout_2D_2"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    @classmethod
+    def poll(self,context):     
+        isIncluded = False   
+        for text in bpy.data.texts:
+            if text.name == "2DTools.py":
+                isIncluded = True
+                break
+        return isIncluded == True
+    
+    def draw(self, context):
+        scene = bpy.context.scene
+        render = scene.render
+        
+        layout = self.layout
+        row = layout.row()
+        self.layout.label(text="Camera Size")
+        
+        layout.prop(render,'resolution_x', text='width') 
+        layout.prop(render,'resolution_y', text='height') 
+        #bpy.context.scene.render.resolution_x
+        
+        row = layout.row()
+        self.layout.label(text="Composition")
+        
+        #row = layout.row()
+        #row.operator("scene.button1")
+        row = layout.row()
+        row.operator("scene.selectcam")
+        
+        row = layout.row()
+        row.operator("scene.screenlayout")
+        #row = layout.row()     
+        #row.operator("scene.storeimages")
+        #row = layout.row()     
+        #row.operator("scene.packview")
 
 class Selected(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
@@ -465,6 +509,7 @@ class Selected(bpy.types.Panel):
     bl_category = "2D Tools"
     bl_label = "Solids"
     bl_idname = "SCENE_PT_layout_2D"
+    bl_options = {'DEFAULT_CLOSED'}
     
     @classmethod
     def poll(self,context):     
@@ -483,130 +528,7 @@ class Selected(bpy.types.Panel):
             
         row = layout.row()
         row.operator("scene.button2", text= "Add Layer")    
-            
-        row = layout.row() 
-        obj = bpy.context.object
-        
-        if (bpy.context.selected_objects != []):
-            if (bpy.context.object.type == 'MESH'):
-                if(len(obj.modifiers) > 0):
-                    if(obj.modifiers[0].node_group.name == "bpx_geo"):
-                        for modifier in obj.modifiers:
-                            if modifier.type == "NODES":
-                                geo = bpy.context.object.modifiers["GeometryNodes"]
-                                scene = bpy.context.scene
-                                
-                                xVal = bpy.context.scene.render.resolution_x
-                                yVal = bpy.context.scene.render.resolution_y
-                                cam = bpy.context.scene.camera.data.name
-                                scale = bpy.data.cameras[cam].ortho_scale
-                                
-                                if (geo["Input_20"] != xVal) or (geo["Input_21"] != yVal) or (geo["Input_22"] != scale):
-                                    layout = self.layout
-                                    self.layout.label(text= "Pixel Size Not Accutate")
-                                    #fix current
-                                    row = layout.row()
-                                    row.operator("scene.fixpix")  
-                        
-                                height = 1024
-                                width = 1024
-                                sizeVal = width
-                                
-                                #scene["solidWidth"] = geo["Input_3"]
-                                #scene["solidHeight"] = geo["Input_4"]
-                                            
-                                if (height > width):
-                                    sizeVal = height
-                                    
-                                scaling = sizeVal/scale
-                                locX = bpy.context.object.location[0]
-                                locY = bpy.context.object.location[1]
-                                
-                                locXu = locX * scaling
-                                locYu = locY * scaling
-                                
-                                pixLocX = locXu-(width/-2)
-                                pixLocY = locYu-(height/-2)
-                                zLayer = bpy.context.object.location[2]
-                                
-                                layout = self.layout
-                                row = layout.row()
-                                #layout.prop(scene, '["bpxName"]')
-                                #self.layout.label(text= "position= " + str(pixLocX)+", "+ str(pixLocY))
-                                self.layout.label(text= "Selected:")
-                                #self.layout.label(text = "size= "+str(geo["Input_3"]) + "x" + str(geo["Input_4"]))
-                                
-                                #maybe useful?
-                                #self.layout.label(text= "Z Index= " + str(zLayer))
-                                
-                                row = layout.row()
-                                row.prop(geo, '["Input_3"]', text = "width")
-                                row = layout.row()
-                                row.prop(geo, '["Input_4"]', text = "height")
-                                
-                                #should be toggle checkbox
-                                row = layout.row()
-                                row.prop(geo, '["Input_2"]', text = "match cam size")
-                                
-                                if geo["Input_25"] == 0:
-                                    currentPivot = "Centered"
-                                elif geo["Input_25"] == 1:
-                                    currentPivot = "Bottom-Left"
-                                elif geo["Input_25"] == 2:
-                                    currentPivot = "Bottom-Right"
-                                elif geo["Input_25"] == 3:
-                                    currentPivot = "Top-Left"
-                                elif geo["Input_25"] == 4:
-                                    currentPivot = "Top-Right"
-                                elif geo["Input_25"] == 5:
-                                    currentPivot = "Left-Center"
-                                elif geo["Input_25"] == 6:
-                                    currentPivot = "Top-Center"
-                                elif geo["Input_25"] == 7:
-                                    currentPivot = "Right-Center"
-                                else:
-                                    currentPivot = "Bottom-Center"
-                                
-                                row = layout.row()
-                                self.layout.label(text= "Pivot:")
-                                row = layout.row()
-                                row.operator("scene.showpivotmenu", text=currentPivot) 
-                                
-                                row = layout.row()
-                                self.layout.label(text= "Texture:")
-                                row = layout.row()
-                                row.operator("scene.showmatmenu", text="Set Texture") 
-                                
-                                row = layout.row()
-                                self.layout.label(text= "Rigging:")
-                                row = layout.row()
-                                row.operator("scene.layoutrig")
-                                                
-                                #row = layout.row()
-                                #row.operator("scene.editselected")
-                                #row = layout.row()
-                                #row.operator("scene.canvassize")
-                                #row = layout.row()
-                                
-#                                selected = bpy.context.object
-#                                if (len(selected.material_slots) > 0):
-#                                    for node in selected.material_slots[0].material.node_tree.nodes:
-#                                        if node.name == "bpy_TransparentImage":                                        
-#                                            tree = selected.material_slots[0].material.node_tree
-#                                            imagenode = selected.material_slots[0].material.node_tree.nodes['bpy_TransparentImage'] 
-#                                            
-#                                            row = layout.row()
-#                                            layout.label(text="Image Texture:")
 
-#                                            row = layout.row()
-#                                            layout.template_node_view(tree, imagenode, imagenode.inputs["ImageColor"])
-#                                            
-#                                            row = layout.row()
-#                                            row.operator("scene.matchtexsize") 
-#                                            
-#                                            break 
-                                    
-                    
 class MyOptions(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
@@ -650,6 +572,157 @@ class MyOptions(bpy.types.Panel):
         #row = layout.row()     
         #row.operator("scene.packview")
 
+class SelectedSolid(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "2D Tools"
+    bl_label = "Selected Solid"
+    bl_idname = "SCENE_PT_layout_2D_3"
+
+    @classmethod
+    def poll(self,context):   
+        
+        obj = bpy.context.object  
+        isIncluded = False   
+        for text in bpy.data.texts:
+            if text.name == "2DTools.py":
+                if (bpy.context.selected_objects != []):
+                    if (bpy.context.object.type == 'MESH'):
+                        if(len(obj.modifiers) > 0):
+                            if(obj.modifiers[0].node_group.name == "bpx_geo"):
+                                isIncluded = True
+                                break
+        return isIncluded == True
+    
+    def draw(self, context):
+        layout = self.layout 
+        
+        row = layout.row()
+        row.operator("scene.resetcam")  
+            
+        row = layout.row()
+        row.operator("scene.button2", text= "Add Layer")    
+            
+        row = layout.row() 
+        obj = bpy.context.object
+        
+        for modifier in obj.modifiers:
+            if modifier.type == "NODES":
+                geo = bpy.context.object.modifiers["GeometryNodes"]
+                scene = bpy.context.scene
+                
+                xVal = bpy.context.scene.render.resolution_x
+                yVal = bpy.context.scene.render.resolution_y
+                cam = bpy.context.scene.camera.data.name
+                scale = bpy.data.cameras[cam].ortho_scale
+                
+                if (geo["Input_20"] != xVal) or (geo["Input_21"] != yVal) or (geo["Input_22"] != scale):
+                    layout = self.layout
+                    self.layout.label(text= "Pixel Size Not Accutate")
+                    #fix current
+                    row = layout.row()
+                    row.operator("scene.fixpix")  
+        
+                height = 1024
+                width = 1024
+                sizeVal = width
+                
+                #scene["solidWidth"] = geo["Input_3"]
+                #scene["solidHeight"] = geo["Input_4"]
+                            
+                if (height > width):
+                    sizeVal = height
+                    
+                scaling = sizeVal/scale
+                locX = bpy.context.object.location[0]
+                locY = bpy.context.object.location[1]
+                
+                locXu = locX * scaling
+                locYu = locY * scaling
+                
+                pixLocX = locXu-(width/-2)
+                pixLocY = locYu-(height/-2)
+                zLayer = bpy.context.object.location[2]
+                
+                layout = self.layout
+                row = layout.row()
+                #layout.prop(scene, '["bpxName"]')
+                #self.layout.label(text= "position= " + str(pixLocX)+", "+ str(pixLocY))
+                self.layout.label(text= "Selected:")
+                #self.layout.label(text = "size= "+str(geo["Input_3"]) + "x" + str(geo["Input_4"]))
+                
+                #maybe useful?
+                #self.layout.label(text= "Z Index= " + str(zLayer))
+                
+                row = layout.row()
+                row.prop(geo, '["Input_3"]', text = "width")
+                row = layout.row()
+                row.prop(geo, '["Input_4"]', text = "height")
+                
+                #should be toggle checkbox
+                row = layout.row()
+                row.prop(geo, '["Input_2"]', text = "match cam size")
+                
+                if geo["Input_25"] == 0:
+                    currentPivot = "Centered"
+                elif geo["Input_25"] == 1:
+                    currentPivot = "Bottom-Left"
+                elif geo["Input_25"] == 2:
+                    currentPivot = "Bottom-Right"
+                elif geo["Input_25"] == 3:
+                    currentPivot = "Top-Left"
+                elif geo["Input_25"] == 4:
+                    currentPivot = "Top-Right"
+                elif geo["Input_25"] == 5:
+                    currentPivot = "Left-Center"
+                elif geo["Input_25"] == 6:
+                    currentPivot = "Top-Center"
+                elif geo["Input_25"] == 7:
+                    currentPivot = "Right-Center"
+                else:
+                    currentPivot = "Bottom-Center"
+                
+                row = layout.row()
+                self.layout.label(text= "Pivot:")
+                row = layout.row()
+                row.operator("scene.showpivotmenu", text=currentPivot) 
+                
+#                row = layout.row()
+#                self.layout.label(text= "Texture:")
+#                row = layout.row()
+#                row.operator("scene.showmatmenu", text="Set Texture") 
+                
+                row = layout.row()
+                self.layout.label(text= "Layout:")
+                row = layout.row()
+                row.operator("scene.layoutrig", text="Add Empties On Points")
+                                
+                #row = layout.row()
+                #row.operator("scene.editselected")
+                #row = layout.row()
+                #row.operator("scene.canvassize")
+                #row = layout.row()
+                
+                selected = bpy.context.object
+                if (len(selected.material_slots) > 0):
+                    for node in selected.material_slots[0].material.node_tree.nodes:
+                        if node.name == "bpy_TransparentImage":                                        
+                            tree = selected.material_slots[0].material.node_tree
+                            imagenode = selected.material_slots[0].material.node_tree.nodes['bpy_TransparentImage'] 
+                            
+                            row = layout.row()
+                            layout.label(text="Image Texture:")
+
+                            row = layout.row()
+                            layout.template_node_view(tree, imagenode, imagenode.inputs["ImageColor"])
+                            
+                            row = layout.row()
+                            row.operator("scene.matchtexsize") 
+                            
+                            break                                    
+                    
+
+
 def register():  
     #bpy.utils.register_class(StoreImages)     
     bpy.utils.register_class(Selected)
@@ -666,6 +739,7 @@ def register():
     bpy.utils.register_class(ShowPivotMenu)
     bpy.utils.register_class(MatMenu)
     bpy.utils.register_class(ShowMatMenu)
+    bpy.utils.register_class(SelectedSolid)
     
     #Pivot Menu
     bpy.utils.register_class(PivotCenter)

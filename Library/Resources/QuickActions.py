@@ -60,6 +60,18 @@ class RecursiveArmature(bpy.types.Operator):
             bpy.context.object.data.edit_bones[boneName].parent = bpy.context.object.data.edit_bones[parentBoneName]
             
             #add modifier to active
+            #maybe constrain instead
+            
+#            active.children[i].constraints.new(type='COPY_LOCATION')
+#            active.children[i].constraints["Copy Location"].target = armatureName
+#            active.children[i].constraints["Copy Location"].subtarget = boneName
+#            active.children[i].constraints.new(type='COPY_ROTATION')
+#            active.children[i].constraints["Copy Rotation"].target = armatureName
+#            active.children[i].constraints["Copy Rotation"].subtarget = boneName
+#            active.children[i].constraints.new(type='COPY_SCALE')
+#            active.children[i].constraints["Copy Scale"].target = armatureName
+#            active.children[i].constraints["Copy Scale"].subtarget = boneName
+            
             if (active.children[i].type == 'MESH'):
                 active.children[i].modifiers.new("Armature", 'ARMATURE')
                 active.children[i].modifiers["Armature"].object = armatureName
@@ -77,13 +89,16 @@ class RecursiveArmature(bpy.types.Operator):
                 active = active.parent
                 parentBoneName = bpy.context.object.data.edit_bones[boneName].parent.name
                 
+#            active.hide_select=True
+            #bpy.ops.parent_clear(type='CLEAR_KEEP_TRANSFORM')
+                
             i += 1
                 
         return {"FINISHED"}
 
 class EmptyToArmature(bpy.types.Operator):
     bl_idname = "scene.emptytoarmature"
-    bl_label = "Make Armature Structure"
+    bl_label = "Hirearchy To Armature"
     bl_description = "Make Armature structure on parented objects"
     
     def execute(self, context):
@@ -123,6 +138,11 @@ class EmptyToArmature(bpy.types.Operator):
         bpy.ops.scene.recursivearmature()        
         bpy.ops.object.editmode_toggle()
         bpy.context.scene.cursor.location = (0,0,0)
+        
+        #select active and all children
+        #move to new collection
+        #unparent
+        #move armature to new collection
                 
         return {"FINISHED"}
 
@@ -585,6 +605,7 @@ class QuickActions(bpy.types.Panel):
     bl_category = "Quick Actions"
     bl_label = "Quick Renders"
     bl_idname = "SCENE_PT_layout_custom"
+    bl_options = {'DEFAULT_CLOSED'}
 
     
     def draw(self, context):        
@@ -625,8 +646,9 @@ class QuickActions2(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "Quick Actions"
-    bl_label = "Quick Actions"
+    bl_label = "Quick Scene"
     bl_idname = "SCENE_PT_layout_custom1"
+    bl_options = {'DEFAULT_CLOSED'}
 
     
     def draw(self, context):        
@@ -650,10 +672,6 @@ class QuickActions2(bpy.types.Panel):
         scene = bpy.context.scene
         render = scene.render        
         layout = self.layout
-        
-        layout.label(text="Scene Rig")
-        row = layout.row()       
-        row.operator("scene.emptytoarmature")   
 
         layout.label(text="Scene Color")
         row = layout.row()       
@@ -669,14 +687,33 @@ class QuickActions2(bpy.types.Panel):
         row = layout.row() 
         row.operator("scene.boostcontrast", text= buttonContrast)          
     
-        layout.label(text="Center Objects on 3D Cursor  ")    
-        row = layout.row()
-        row.operator("scene.spacexwithcam")        
-        row = layout.row()
-        row.operator("scene.spaceywithcam")        
-        row = layout.row()
-        row.operator("scene.spacezwithcam")        
-        row = layout.row()
+#        layout.label(text="Center Objects on 3D Cursor  ")    
+#        row = layout.row()
+#        row.operator("scene.spacexwithcam")        
+#        row = layout.row()
+#        row.operator("scene.spaceywithcam")        
+#        row = layout.row()
+#        row.operator("scene.spacezwithcam")        
+#        row = layout.row()
+        
+class QuickUnity(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Quick Actions"
+    bl_label = "Blender To Unity"
+    bl_idname = "SCENE_PT_layout_blendertounity"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    
+    def draw(self, context):        
+        
+        scene = bpy.context.scene
+        render = scene.render        
+        layout = self.layout
+        
+        layout.label(text="Scene Rig")
+        row = layout.row()       
+        row.operator("scene.emptytoarmature")   
         
         
 bpy.utils.register_class(QuickActions)  
@@ -698,3 +735,4 @@ bpy.utils.register_class(DisableCM)
 bpy.utils.register_class(ResetCM)
 bpy.utils.register_class(BoostContrast)
 bpy.utils.register_class(CreateBones)
+bpy.utils.register_class(QuickUnity)

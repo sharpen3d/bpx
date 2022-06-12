@@ -137,8 +137,8 @@ class RenderTemplates(bpy.types.Operator):
         currentFrame = scene.frame_current        
         revertPath = render.filepath
 
-        renderName = "Symbol_Template" 
-        render.filepath = "//Templates//"+renderName+"_"
+        renderName = "Symbols" 
+        render.filepath = "//Templates//ScreenSize//"+renderName+"_"
         
         scene.frame_start = currentFrame
         scene.frame_end = currentFrame
@@ -173,8 +173,8 @@ class RenderTemplates(bpy.types.Operator):
         currentFrame = scene.frame_current        
         revertPath = render.filepath
 
-        renderName = "Cover_Template" 
-        render.filepath = "//Templates//"+renderName+"_"
+        renderName = "Covers" 
+        render.filepath = "//Templates//ScreenSize//"+renderName+"_"
         
         scene.frame_start = currentFrame
         scene.frame_end = currentFrame
@@ -210,8 +210,8 @@ class RenderTemplates(bpy.types.Operator):
         currentFrame = scene.frame_current        
         revertPath = render.filepath
 
-        renderName = "Background_Template" 
-        render.filepath = "//Templates//"+renderName+"_"
+        renderName = "Background" 
+        render.filepath = "//Templates//ScreenSize//"+renderName+"_"
         
         scene.frame_start = currentFrame
         scene.frame_end = currentFrame
@@ -231,7 +231,6 @@ class RenderTemplates(bpy.types.Operator):
         scene.frame_start = revertStart
         scene.frame_end = revertEnd   
         
-        
         #render Frame
         bpy.context.object.modifiers["GeometryNodes"]["Input_31"] = 0
         bpy.context.object.modifiers["GeometryNodes"]["Input_29"] = 0
@@ -248,8 +247,8 @@ class RenderTemplates(bpy.types.Operator):
         currentFrame = scene.frame_current        
         revertPath = render.filepath
 
-        renderName = "Frame_Template" 
-        render.filepath = "//Templates//"+renderName+"_"
+        renderName = "Frame" 
+        render.filepath = "//Templates//ScreenSize"+renderName+"_"
         
         scene.frame_start = currentFrame
         scene.frame_end = currentFrame
@@ -283,6 +282,12 @@ class RenderTemplates(bpy.types.Operator):
         BGwidth = symbolGridData.attributes["BGwidth"].data[0].value
         BGheight = symbolGridData.attributes["BGheight"].data[0].value
         
+        
+        
+        ##
+        ##
+        #new scenes
+        
         if frameWidth > frameHeight:
             frameSize = frameWidth
         else:
@@ -301,6 +306,7 @@ class RenderTemplates(bpy.types.Operator):
         #render template symbol        
         #create new scene to render from
         bpy.ops.scene.new(type='NEW')
+        bpy.context.scene.name = "FrameTemplate"
         
         #set render resolution to nearest power of 2
         bpy.context.scene.render.resolution_x = power
@@ -352,7 +358,7 @@ class RenderTemplates(bpy.types.Operator):
         currentFrame = scene.frame_current        
         revertPath = render.filepath
 
-        renderName = "Frame_Template_Centered" + str(power) + "x" + str(power)       
+        renderName = "Frame"    
         render.filepath = "//Templates//"+renderName+"_"
         
         scene.frame_start = currentFrame
@@ -407,6 +413,8 @@ class RenderTemplates(bpy.types.Operator):
         #render template symbol        
         #create new scene to render from
         bpy.ops.scene.new(type='NEW')
+        bpy.context.scene.name = "SymbolTemplate"
+
         
         #set render resolution to nearest power of 2
         bpy.context.scene.render.resolution_x = power
@@ -450,7 +458,7 @@ class RenderTemplates(bpy.types.Operator):
         currentFrame = scene.frame_current        
         revertPath = render.filepath
 
-        renderName = "Symbol_Template_Single" + str(symbolWidth) + "x" + str(symbolHeight)       
+        renderName = "Symbol_Template"
         render.filepath = "//Templates//"+renderName+"_"
         
         scene.frame_start = currentFrame
@@ -490,8 +498,10 @@ class RenderTemplates(bpy.types.Operator):
                 power = pow
                 break;
             i += 1 
+
         #create new scene to render from
         bpy.ops.scene.new(type='NEW')
+        bpy.context.scene.name = "CoverTemplate"
         
         #set render resolution to nearest power of 2
         bpy.context.scene.render.resolution_x = power
@@ -535,7 +545,7 @@ class RenderTemplates(bpy.types.Operator):
         currentFrame = scene.frame_current        
         revertPath = render.filepath
 
-        renderName = "Cover_Template_Single" + str(coverWidth) + "x" + str(coverHeight)       
+        renderName = "Cover_Template"       
         render.filepath = "//Templates//"+renderName+"_"
         
         scene.frame_start = currentFrame
@@ -576,6 +586,7 @@ class RenderTemplates(bpy.types.Operator):
             i += 1 
         #create new scene to render from
         bpy.ops.scene.new(type='NEW')
+        bpy.context.scene.name = "BackgroundTemplate"
         
         #set render resolution to nearest power of 2
         bpy.context.scene.render.resolution_x = power
@@ -619,7 +630,7 @@ class RenderTemplates(bpy.types.Operator):
         currentFrame = scene.frame_current        
         revertPath = render.filepath
 
-        renderName = "Background_Template_Single" + str(coverWidth) + "x" + str(coverHeight)       
+        renderName = "Background_Template"
         render.filepath = "//Templates//"+renderName+"_"
         
         scene.frame_start = currentFrame

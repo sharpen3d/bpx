@@ -212,6 +212,7 @@ class StartOptions(bpy.types.Panel):
     bl_label = "Add Emitters"
     bl_idname = "SCENE_PT_layout01"
     bl_order = 1
+    bl_options = {'DEFAULT_CLOSED'}
     
     def draw(self, context):
         scene = bpy.context.scene
@@ -246,6 +247,7 @@ class ParticleOptions(bpy.types.Panel):
     bl_label = "Spawn Properties"
     bl_idname = "SCENE_PT_layout"
     bl_order = 2
+    bl_options = {'DEFAULT_CLOSED'}
 
     #display menu section
     
@@ -327,6 +329,7 @@ class ParticleRendering(bpy.types.Panel):
     bl_category = "Emitters"
     bl_label = "Color Over Life"
     bl_idname = "SCENE_PT_layout02"
+    bl_options = {'DEFAULT_CLOSED'}
     
     def draw(self, context):
         scene = bpy.context.scene
@@ -378,6 +381,7 @@ class ParticleSpeed(bpy.types.Panel):
     bl_category = "Emitters"
     bl_label = "Movement Over Time"
     bl_idname = "SCENE_PT_layout03"
+    bl_options = {'DEFAULT_CLOSED'}
     
 
     def draw(self, context):
@@ -415,6 +419,7 @@ class ParticleScale(bpy.types.Panel):
     bl_category = "Emitters"
     bl_label = "Scale"
     bl_idname = "SCENE_PT_layout04"
+    bl_options = {'DEFAULT_CLOSED'}
 
     
     def draw(self, context):
@@ -456,6 +461,7 @@ class ParticleInstance(bpy.types.Panel):
     bl_label = "Instancing"
     bl_idname = "SCENE_PT_layout05"
     bl_order = 0
+    bl_options = {'DEFAULT_CLOSED'}
     
     def draw(self, context):
         scene = bpy.context.scene    
@@ -488,6 +494,7 @@ class ParticleRotation(bpy.types.Panel):
     bl_category = "Emitters"
     bl_label = "Rotation"
     bl_idname = "SCENE_PT_layout06"
+    bl_options = {'DEFAULT_CLOSED'}
     
     def draw(self, context):
         scene = bpy.context.scene    
