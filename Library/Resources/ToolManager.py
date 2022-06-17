@@ -71,13 +71,14 @@ class emitter_append(bpy.types.Operator):
     
     def execute(self, context):
         path = resources_path + "\\Extensions\\Resources.blend"
-        subFolder = "\\Scene\\"
-        object = "Emitters"
+        subFolder = "\\NodeTree\\"
+        object = "bpx_particleNodes"
 
         library = path + subFolder
         xfilepath = path + subFolder + object
 
         bpy.ops.wm.append(filename = object, filepath = xfilepath, directory = library)
+        bpy.data.node_groups['bpx_particleNodes'].use_fake_user = True
               
         return {"FINISHED"}
     
@@ -243,7 +244,7 @@ class append_button(bpy.types.Operator):
             if index == 4:
                 if tm_tool.GridPacker == True:
                     for text in bpy.data.texts:
-                        if text.name == "GridPacker.py":
+                        if text.name == "2DTools.py":
                             print("skipping 2D Tools, already installed")
                             break
                     else:
