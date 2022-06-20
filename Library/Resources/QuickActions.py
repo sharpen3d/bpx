@@ -14,6 +14,34 @@ savedBoneName = ""
 acitve = None
 armatureName = None
 
+class UnityFbx(bpy.types.Operator):
+    bl_idname = "scene.unityfbx"
+    bl_label = "Export selected as FBX"
+    bl_description = "Selection to cursor X (keep offset)"
+    
+    def execute(self, context):
+        thisFilePath = bpy.data.filepath
+        thisFileName = bpy.path.basename(bpy.context.blend_data.filepath)
+        fileBaseName = thisFileName.replace(".blend", "")
+        currentPath = thisFilePath.replace(thisFileName, "")
+        currentPath = currentPath[:-1]
+        
+        directory = "FBX"
+        parent_dir = currentPath
+        parent_dir = os.path.normpath(parent_dir)
+        path = os.path.join(parent_dir, directory)
+        
+        isdir = os.path.isdir(path)
+        if (isdir == False):
+            os.mkdir(path)
+        
+        objectName  = bpy.context.object.name
+        f = os.path.normpath(currentPath + "//FBX//" + objectName + ".fbx")
+        
+        bpy.ops.export_scene.fbx(filepath=f, check_existing = False, use_selection = True, apply_scale_options = 'FBX_SCALE_ALL', use_space_transform = False, bake_space_transform = False, bake_anim = True, bake_anim_use_nla_strips = True, bake_anim_use_all_actions = False, axis_forward = '-Z', axis_up = 'Y')
+
+        return {"FINISHED"}
+
 class RecursiveArmature(bpy.types.Operator):
     bl_idname = "scene.recursivearmature"
     bl_label = "Make Armature Structure"
@@ -714,6 +742,8 @@ class QuickUnity(bpy.types.Panel):
         layout.label(text="Scene Rig")
         row = layout.row()       
         row.operator("scene.emptytoarmature")   
+        row = layout.row()       
+        row.operator("scene.unityfbx")   
         
         
 bpy.utils.register_class(QuickActions)  
@@ -736,3 +766,4 @@ bpy.utils.register_class(ResetCM)
 bpy.utils.register_class(BoostContrast)
 bpy.utils.register_class(CreateBones)
 bpy.utils.register_class(QuickUnity)
+bpy.utils.register_class(UnityFbx)

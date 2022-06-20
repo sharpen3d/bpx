@@ -4,6 +4,7 @@ thisFilePath = bpy.data.filepath
 thisFileName = bpy.path.basename(bpy.context.blend_data.filepath)
 currentPath = thisFilePath.replace(thisFileName, "")
 currentPath = currentPath[:-1]
+input = None
 
 class SetGeoMat(bpy.types.Operator):
     bl_idname = "scene.setgeomat"
@@ -89,7 +90,115 @@ class AddPointEmitter(bpy.types.Operator):
             self.report({'INFO'}, "Add a camera before creating an emitter!")
         
         return {"FINISHED"}
+
+class UseConstant(bpy.types.Operator):
+    bl_idname = "scene.useconstant"
+    bl_label = "Constant"
     
+    def execute(self, context):
+        global input
+        input.default_value = False
+        
+        return {"FINISHED"}
+
+class UseRandom(bpy.types.Operator):
+    bl_idname = "scene.userandom"
+    bl_label = "Random In Range"
+    
+    def execute(self, context):
+        global input
+        
+        print(input)
+        input.default_value = True
+        
+        return {"FINISHED"}
+
+class ShowInputMenu(bpy.types.Operator):
+    bl_idname = "scene.showinputmenu"
+    bl_label = "Input Selection"
+    
+    def execute(self, context):
+        global input
+        input = bpy.context.object.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[4]
+                
+        bpy.ops.wm.call_menu(name=InputSelect.bl_idname)
+                
+        return {"FINISHED"}
+                    
+class InputSelect(bpy.types.Menu):
+    bl_label = "Input Type"
+    bl_idname = "INPUT_MT_inputmenu"
+
+    def draw(self, context):
+        layout = self.layout
+
+        layout.operator("scene.useconstant")
+        layout.operator("scene.userandom")
+        
+        
+class ParticleOptions(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Emitters"
+    bl_label = "Emitters"
+    bl_idname = "SCENE_PT_layout"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    #display menu section
+    
+    def draw(self, context):
+        scene = bpy.context.scene
+        layout = self.layout
+        row = layout.row()
+        #selected = bpy.context.object
+        #mod = selected.modifiers
+        
+        row.operator("scene.addpointemitter", text="Add New Emitter")
+        
+        #check if particle is selected
+        isIncluded = False
+        if (bpy.context.selected_objects != []):
+            selected = bpy.context.object
+            if (selected.type == 'MESH'):
+                if(len(selected.modifiers) > 0):
+                    if "bpx_particleNodes" in selected.modifiers[0].node_group.name:
+                        isIncluded = True
+    
+        if isIncluded == True:
+            self.layout.label(text="Spawn")
+            row = layout.row()                    
+            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[1], 'default_value', text="Particle Count")
+            row = layout.row()                    
+            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[2], 'default_value', text="Trail Length")   
+            row = layout.row()                    
+            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[3], 'default_value', text="Trail Spacing")
+            
+            self.layout.label(text="Start Frame")
+            row = layout.row(align=True)
+            row.operator("scene.showinputmenu", text="", icon='DOWNARROW_HLT')
+            
+            if selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[4].default_value == True:
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[6], 'default_value', text="Min")
+                row = layout.row()
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[7], 'default_value', text="Max")
+            else:
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[5], 'default_value', text="Constant")
+            row = layout.row()
+
+
+
+#nodes["Particle Spawner"].inputs[5].default_value
+#external values (un-nested)
+#row = layout.row()        
+#row.prop(selected.modifiers["GeometryNodes"], '["Input_6"]', text = "Random Seed")
+
+#inputs on nested node groups
+
+#curveMap = selected.modifiers["GeometryNodes"].node_group.nodes["Speed Over Life"]
+#row = layout.row()
+#layout.label(text="Speed Over Life")
+#layout.template_curve_mapping(curveMap, "mapping")
+
 #class InstanceParticle(bpy.types.Operator):
 #    bl_idname = "scene.instanceparticle"
 #    bl_label = "Make Instance Unique"
@@ -109,36 +218,6 @@ class AddPointEmitter(bpy.types.Operator):
 #        #newgroup.name = bpy.context.scene["Name"]
 #        
 #        return {"FINISHED"} 
-                    
-
-class ParticleOptions(bpy.types.Panel):
-    bl_space_type = 'VIEW_3D'
-    bl_region_type = 'UI'
-    bl_category = "Emitters"
-    bl_label = "Spawn Emitter"
-    bl_idname = "SCENE_PT_layout"
-    bl_options = {'DEFAULT_CLOSED'}
-
-    #display menu section
-    
-    def draw(self, context):
-        scene = bpy.context.scene
-        layout = self.layout
-        row = layout.row()
-        #selected = bpy.context.object
-        #mod = selected.modifiers
-        
-        row.operator("scene.addpointemitter", text="Add New Emitter")
-        
-        #check if particle is selected   
-        
-        #external values (un-nested)
-        #row = layout.row()        
-        #row.prop(selected.modifiers["GeometryNodes"], '["Input_6"]', text = "Random Seed")
-        
-        #inputs on nested node groups
-                    
-
                     
 #class ParticleRendering(bpy.types.Panel):
 #    bl_space_type = 'VIEW_3D'
@@ -197,3 +276,7 @@ class ParticleOptions(bpy.types.Panel):
 bpy.utils.register_class(AddPointEmitter)
 bpy.utils.register_class(ParticleOptions)
 bpy.utils.register_class(SetGeoMat)
+bpy.utils.register_class(UseConstant)
+bpy.utils.register_class(UseRandom)
+bpy.utils.register_class(ShowInputMenu)
+bpy.utils.register_class(InputSelect)
