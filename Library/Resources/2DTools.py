@@ -508,7 +508,6 @@ class Selected(bpy.types.Panel):
     bl_category = "2D Tools"
     bl_label = "Solids"
     bl_idname = "SCENE_PT_layout_2D"
-    bl_options = {'DEFAULT_CLOSED'}
     
     @classmethod
     def poll(self,context):     
