@@ -124,6 +124,18 @@ class ShowInputMenu(bpy.types.Operator):
         bpy.ops.wm.call_menu(name=InputSelect.bl_idname)
                 
         return {"FINISHED"}
+
+class ShowInputMenuLife(bpy.types.Operator):
+    bl_idname = "scene.showinputmenulife"
+    bl_label = "Input Selection"
+    
+    def execute(self, context):
+        global input
+        input = bpy.context.object.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[8]
+                
+        bpy.ops.wm.call_menu(name=InputSelect.bl_idname)
+                
+        return {"FINISHED"}
                     
 class InputSelect(bpy.types.Menu):
     bl_label = "Input Type"
@@ -165,26 +177,62 @@ class ParticleOptions(bpy.types.Panel):
                         isIncluded = True
     
         if isIncluded == True:
+            
+            #Spawn options
             self.layout.label(text="Spawn")
             row = layout.row()                    
             row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[1], 'default_value', text="Particle Count")
             row = layout.row()                    
+            
+            #Trail options
+            self.layout.label(text="Trails")
+            row = layout.row()  
             row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[2], 'default_value', text="Trail Length")   
             row = layout.row()                    
             row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[3], 'default_value', text="Trail Spacing")
             
+            #Start Frame options
             self.layout.label(text="Start Frame")
             row = layout.row(align=True)
             row.operator("scene.showinputmenu", text="", icon='DOWNARROW_HLT')
-            
             if selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[4].default_value == True:
                 row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[6], 'default_value', text="Min")
                 row = layout.row()
                 row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[7], 'default_value', text="Max")
             else:
                 row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[5], 'default_value', text="Constant")
+            row = layout.row()         
+            
+            #Lifetime optinos
+            self.layout.label(text="Lifetime")
+            row = layout.row(align=True)
+            row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')            
+            if selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[8].default_value == True:
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[10], 'default_value', text="Min")
+                row = layout.row()
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[11], 'default_value', text="Max")
+            else:
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[9], 'default_value', text="Constant")
             row = layout.row()
-
+            
+            #looping options
+            self.layout.label(text="Looping")
+            row = layout.row()
+            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[13], 'default_value', text="Is Loop", slider=True)
+            row = layout.row()
+            if selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[13].default_value == True:
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[12], 'default_value', text="Loop Duration")
+                row = layout.row()
+            
+            #curve options
+            self.layout.label(text="Curves")
+            row = layout.row()
+            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[16], 'default_value', text="Spawn From Curve", slider=True)
+            row = layout.row()
+            if selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[16].default_value == True:
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Custom Curve"].inputs[0], 'default_value', text="Curve Object")
+                row = layout.row()
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[14], 'default_value', text="Curve Sweep Time")
 
 
 #nodes["Particle Spawner"].inputs[5].default_value
@@ -279,4 +327,5 @@ bpy.utils.register_class(SetGeoMat)
 bpy.utils.register_class(UseConstant)
 bpy.utils.register_class(UseRandom)
 bpy.utils.register_class(ShowInputMenu)
+bpy.utils.register_class(ShowInputMenuLife)
 bpy.utils.register_class(InputSelect)
