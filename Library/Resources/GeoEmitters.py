@@ -136,6 +136,50 @@ class ShowInputMenuLife(bpy.types.Operator):
         bpy.ops.wm.call_menu(name=InputSelect.bl_idname)
                 
         return {"FINISHED"}
+
+class ShowInputMenuSpeed(bpy.types.Operator):
+    bl_idname = "scene.showinputmenuspeed"
+    bl_label = "Input Selection"
+    
+    def execute(self, context):
+        global input
+        input = bpy.context.object.modifiers["GeometryNodes"].node_group.nodes["Initial Movement"].inputs[6]
+        bpy.ops.wm.call_menu(name=InputSelect.bl_idname)
+                
+        return {"FINISHED"}
+    
+class ShowInputMenuScale(bpy.types.Operator):
+    bl_idname = "scene.showinputmenuscale"
+    bl_label = "Input Selection"
+    
+    def execute(self, context):
+        global input
+        input = bpy.context.object.modifiers["GeometryNodes"].node_group.nodes["Group"].inputs[8]
+        bpy.ops.wm.call_menu(name=InputSelect.bl_idname)
+                
+        return {"FINISHED"}
+    
+class ShowInputMenuRotate(bpy.types.Operator):
+    bl_idname = "scene.showinputmenurotate"
+    bl_label = "Input Selection"
+    
+    def execute(self, context):
+        global input
+        input = bpy.context.object.modifiers["GeometryNodes"].node_group.nodes["Start Rotation"].inputs[5]
+        bpy.ops.wm.call_menu(name=InputSelect.bl_idname)
+                
+        return {"FINISHED"}
+    
+class ShowInputMenuRotateOL(bpy.types.Operator):
+    bl_idname = "scene.showinputmenurotateol"
+    bl_label = "Input Selection"
+    
+    def execute(self, context):
+        global input
+        input = bpy.context.object.modifiers["GeometryNodes"].node_group.nodes["Group.006"].inputs[5]
+        bpy.ops.wm.call_menu(name=InputSelect.bl_idname)
+                
+        return {"FINISHED"}
                     
 class InputSelect(bpy.types.Menu):
     bl_label = "Input Type"
@@ -303,13 +347,13 @@ class SpeedOptions(bpy.types.Panel):
             if selected.modifiers["GeometryNodes"].node_group.nodes["Initial Movement"].inputs[6].default_value == True:
                 self.layout.label(text="Particle Speed")
                 row = layout.row(align=True)    
-                row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')   
+                row.operator("scene.showinputmenuspeed", text="", icon='DOWNARROW_HLT')   
                 row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Initial Movement"].inputs[8], 'default_value', text="Min")
                 row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Initial Movement"].inputs[9], 'default_value', text="Max")
             else:
                 row = layout.row(align=True)    
-                row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')  
-                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[7], 'default_value', text="Particle Speed")
+                row.operator("scene.showinputmenuspeed", text="", icon='DOWNARROW_HLT')  
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Initial Movement"].inputs[7], 'default_value', text="Particle Speed")
             row = layout.row()
             row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Initial Movement"].inputs[4], 'default_value', text="Graph Movement Over Lifetime")
             row = layout.row()
@@ -422,12 +466,12 @@ class ScaleOptions(bpy.types.Panel):
                 self.layout.label(text="Particle Scale")
                 row = layout.row(align=True)   
                 #wrong! 
-                row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')   
+                row.operator("scene.showinputmenuscale", text="", icon='DOWNARROW_HLT')   
                 row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Group"].inputs[9], 'default_value', text="Min")
                 row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Group"].inputs[10], 'default_value', text="Max")
             else:
                 row = layout.row(align=True)    
-                row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')  
+                row.operator("scene.showinputmenuscale", text="", icon='DOWNARROW_HLT')  
                 row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Group"].inputs[2], 'default_value', text="Particle Scale")
             row = layout.row()   
             row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Group"].inputs[5], 'default_value', text="Graph Scale Over Lifetime")
@@ -467,15 +511,70 @@ class RotateOptions(bpy.types.Panel):
                 self.layout.label(text="Start Rotation (Min/Max)")
                 row = layout.row(align=True)   
                 #wrong! 
-                row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')   
+                row.operator("scene.showinputmenurotate", text="", icon='DOWNARROW_HLT')   
                 row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Start Rotation"].inputs[6], 'default_value', text="Min")
                 row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Start Rotation"].inputs[7], 'default_value', text="Max")
             else:
                 self.layout.label(text="Start Rotation")
                 row = layout.row(align=True)    
-                row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')  
+                row.operator("scene.showinputmenurotate", text="", icon='DOWNARROW_HLT')  
                 row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Start Rotation"].inputs[4], 'default_value', text="Revolutions")
             row = layout.row()   
+            
+            if selected.modifiers["GeometryNodes"].node_group.nodes["Group.006"].inputs[5].default_value == True:
+                self.layout.label(text="Rotate Over Life (Min/Max)")
+                row = layout.row(align=True)   
+                #wrong! 
+                row.operator("scene.showinputmenurotateol", text="", icon='DOWNARROW_HLT')   
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Group.006"].inputs[6], 'default_value', text="Min")
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Group.006"].inputs[7], 'default_value', text="Max")
+            else:
+                self.layout.label(text="Rotate Over Life (Min/Max)")
+                row = layout.row(align=True)    
+                row.operator("scene.showinputmenurotateol", text="", icon='DOWNARROW_HLT')  
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Start Rotation"].inputs[4], 'default_value', text="Revolutions")
+            row = layout.row()   
+            
+            self.layout.label(text="Interpolate Over Life")
+            curveMap = selected.modifiers["GeometryNodes"].node_group.nodes["Rotate Interpolate"]
+            layout.template_curve_mapping(curveMap, "mapping")
+            row = layout.row()
+            
+class ColorOptions(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Emitters"
+    bl_label = "Particle Color"
+    bl_idname = "SCENE_PT_layout_Color"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    #display menu section
+    
+    def draw(self, context):
+        scene = bpy.context.scene
+        layout = self.layout
+        #selected = bpy.context.object
+        #mod = selected.modifiers
+        
+        #check if particle is selected
+        isIncluded = False
+        if (bpy.context.selected_objects != []):
+            selected = bpy.context.object
+            if (selected.type == 'MESH'):
+                if(len(selected.modifiers) > 0):
+                    if "bpx_particleNodes" in selected.modifiers[0].node_group.name:
+                        isIncluded = True
+    
+        if isIncluded == True:
+            self.layout.label(text="Color Over Life")
+            colorMap = selected.modifiers["GeometryNodes"].node_group.nodes["Particle Color"]
+            layout.template_color_ramp(colorMap, "color_ramp")
+            row = layout.row()
+            
+            self.layout.label(text="Alpha Over Life")
+            colorMap = selected.modifiers["GeometryNodes"].node_group.nodes["Particle Alpha"]
+            layout.template_color_ramp(colorMap, "color_ramp")
+            row = layout.row()
 
 
 
@@ -565,6 +664,11 @@ bpy.utils.register_class(UseConstant)
 bpy.utils.register_class(UseRandom)
 bpy.utils.register_class(ShowInputMenu)
 bpy.utils.register_class(ShowInputMenuLife)
+bpy.utils.register_class(ShowInputMenuSpeed)
+bpy.utils.register_class(ShowInputMenuScale)
+bpy.utils.register_class(ShowInputMenuRotate)
+bpy.utils.register_class(ShowInputMenuRotateOL)
+bpy.utils.register_class(ColorOptions)
 bpy.utils.register_class(InputSelect)
 bpy.utils.register_class(InfoPanel)
 bpy.utils.register_class(LifeOptions)
