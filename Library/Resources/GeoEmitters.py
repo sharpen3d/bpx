@@ -146,15 +146,13 @@ class InputSelect(bpy.types.Menu):
 
         layout.operator("scene.useconstant")
         layout.operator("scene.userandom")
-        
-        
-class ParticleOptions(bpy.types.Panel):
+
+class InfoPanel(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "Emitters"
     bl_label = "Emitters"
-    bl_idname = "SCENE_PT_layout"
-    bl_options = {'DEFAULT_CLOSED'}
+    bl_idname = "SCENE_PT_layout_ParticleInfo"
 
     #display menu section
     
@@ -167,6 +165,23 @@ class ParticleOptions(bpy.types.Panel):
         
         row.operator("scene.addpointemitter", text="Add New Emitter")
         
+class ParticleOptions(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Emitters"
+    bl_label = "Spawn"
+    bl_idname = "SCENE_PT_layout"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    #display menu section
+    
+    def draw(self, context):
+        scene = bpy.context.scene
+        layout = self.layout
+        row = layout.row()
+        #selected = bpy.context.object
+        #mod = selected.modifiers
+        
         #check if particle is selected
         isIncluded = False
         if (bpy.context.selected_objects != []):
@@ -178,54 +193,10 @@ class ParticleOptions(bpy.types.Panel):
     
         if isIncluded == True:
             
-            #Spawn options
-            self.layout.label(text="Spawn")
-            row = layout.row()                    
+            #Spawn options               
             row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[1], 'default_value', text="Particle Count")
-            row = layout.row()                    
-            
-            #Trail options
-            self.layout.label(text="Trails")
-            row = layout.row()  
-            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[2], 'default_value', text="Trail Length")   
-            row = layout.row()                    
-            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[3], 'default_value', text="Trail Spacing")
-            
-            #Start Frame options
-            self.layout.label(text="Start Frame")
-            row = layout.row(align=True)
-            row.operator("scene.showinputmenu", text="", icon='DOWNARROW_HLT')
-            if selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[4].default_value == True:
-                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[6], 'default_value', text="Min")
-                row = layout.row()
-                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[7], 'default_value', text="Max")
-            else:
-                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[5], 'default_value', text="Constant")
-            row = layout.row()         
-            
-            #Lifetime optinos
-            self.layout.label(text="Lifetime")
-            row = layout.row(align=True)
-            row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')            
-            if selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[8].default_value == True:
-                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[10], 'default_value', text="Min")
-                row = layout.row()
-                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[11], 'default_value', text="Max")
-            else:
-                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[9], 'default_value', text="Constant")
-            row = layout.row()
-            
-            #looping options
-            self.layout.label(text="Looping")
-            row = layout.row()
-            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[13], 'default_value', text="Is Loop", slider=True)
-            row = layout.row()
-            if selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[13].default_value == True:
-                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[12], 'default_value', text="Loop Duration")
-                row = layout.row()
-            
+             
             #curve options
-            self.layout.label(text="Curves")
             row = layout.row()
             row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[16], 'default_value', text="Spawn From Curve", slider=True)
             row = layout.row()
@@ -234,13 +205,279 @@ class ParticleOptions(bpy.types.Panel):
                 row = layout.row()
                 row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[14], 'default_value', text="Curve Sweep Time")
 
+            #Emitter shape
+            self.layout.label(text="Emitter Rotation")
+            row = layout.row()
+            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Initial Movement"].inputs[2], 'default_value', text="")   
+            row = layout.row()                    
+            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Initial Movement"].inputs[3], 'default_value', text="Sweep Direction")
+            row = layout.row()                    
 
-#nodes["Particle Spawner"].inputs[5].default_value
-#external values (un-nested)
-#row = layout.row()        
-#row.prop(selected.modifiers["GeometryNodes"], '["Input_6"]', text = "Random Seed")
+class LifeOptions(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Emitters"
+    bl_label = "Life"
+    bl_idname = "SCENE_PT_layout_Life"
+    bl_options = {'DEFAULT_CLOSED'}
 
-#inputs on nested node groups
+    #display menu section
+    
+    def draw(self, context):
+        scene = bpy.context.scene
+        layout = self.layout
+        #selected = bpy.context.object
+        #mod = selected.modifiers
+        
+        #check if particle is selected
+        isIncluded = False
+        if (bpy.context.selected_objects != []):
+            selected = bpy.context.object
+            if (selected.type == 'MESH'):
+                if(len(selected.modifiers) > 0):
+                    if "bpx_particleNodes" in selected.modifiers[0].node_group.name:
+                        isIncluded = True
+    
+        if isIncluded == True:
+            #Start Frame options
+            if selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[4].default_value == True:
+                self.layout.label(text="Start Frame (Min/Max)")
+                row = layout.row(align=True)
+                row.operator("scene.showinputmenu", text="", icon='DOWNARROW_HLT') 
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[6], 'default_value', text="Min")
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[7], 'default_value', text="Max")
+            else:
+                row = layout.row(align=True)
+                row.operator("scene.showinputmenu", text="", icon='DOWNARROW_HLT') 
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[5], 'default_value', text="Start Frame")     
+            
+            #Lifetime optinos
+            row = layout.row()       
+            if selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[8].default_value == True:
+                self.layout.label(text="Lifetime (Min/Max)")
+                row = layout.row(align=True)    
+                row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')   
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[10], 'default_value', text="Min")
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[11], 'default_value', text="Max")
+            else:
+                row = layout.row(align=True)    
+                row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')  
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[9], 'default_value', text="Lifetime")
+            row = layout.row()
+            
+            #looping options
+            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[13], 'default_value', text="Looping", slider=True)
+            row = layout.row()
+            if selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[13].default_value == True:
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[12], 'default_value', text="Loop Duration")
+                row = layout.row()
+            
+class SpeedOptions(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Emitters"
+    bl_label = "Movement"
+    bl_idname = "SCENE_PT_layout_Movement"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    #display menu section
+    
+    def draw(self, context):
+        scene = bpy.context.scene
+        layout = self.layout
+        #selected = bpy.context.object
+        #mod = selected.modifiers
+        
+        #check if particle is selected
+        isIncluded = False
+        if (bpy.context.selected_objects != []):
+            selected = bpy.context.object
+            if (selected.type == 'MESH'):
+                if(len(selected.modifiers) > 0):
+                    if "bpx_particleNodes" in selected.modifiers[0].node_group.name:
+                        isIncluded = True
+    
+        if isIncluded == True:
+            
+            #speed
+            if selected.modifiers["GeometryNodes"].node_group.nodes["Initial Movement"].inputs[6].default_value == True:
+                self.layout.label(text="Particle Speed")
+                row = layout.row(align=True)    
+                row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')   
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Initial Movement"].inputs[8], 'default_value', text="Min")
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Initial Movement"].inputs[9], 'default_value', text="Max")
+            else:
+                row = layout.row(align=True)    
+                row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')  
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[7], 'default_value', text="Particle Speed")
+            row = layout.row()
+            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Initial Movement"].inputs[4], 'default_value', text="Graph Movement Over Lifetime")
+            row = layout.row()
+            if selected.modifiers["GeometryNodes"].node_group.nodes["Initial Movement"].inputs[4].default_value == True:
+                curveMap = selected.modifiers["GeometryNodes"].node_group.nodes["Speed Interpolate"]
+                layout.template_curve_mapping(curveMap, "mapping")
+                row = layout.row()
+                
+            #Global Speed options    
+#            row = layout.row()                 
+#            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[18], 'default_value', text="Simulation Speed")     
+           
+
+class TrailOptions(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Emitters"
+    bl_label = "Trails"
+    bl_idname = "SCENE_PT_layout_Trails"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    #display menu section
+    
+    def draw(self, context):
+        scene = bpy.context.scene
+        layout = self.layout
+        row = layout.row()
+        #selected = bpy.context.object
+        #mod = selected.modifiers
+        
+        #check if particle is selected
+        isIncluded = False
+        if (bpy.context.selected_objects != []):
+            selected = bpy.context.object
+            if (selected.type == 'MESH'):
+                if(len(selected.modifiers) > 0):
+                    if "bpx_particleNodes" in selected.modifiers[0].node_group.name:
+                        isIncluded = True
+    
+        if isIncluded == True:
+            #Trail options
+            row = layout.row()  
+            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[2], 'default_value', text="Trail Length")   
+            row = layout.row()                    
+            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[3], 'default_value', text="Trail Spacing")
+
+class GravityOptions(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Emitters"
+    bl_label = "Physics"
+    bl_idname = "SCENE_PT_layout_Gravity"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    #display menu section
+    
+    def draw(self, context):
+        scene = bpy.context.scene
+        layout = self.layout
+        row = layout.row()
+        #selected = bpy.context.object
+        #mod = selected.modifiers
+        
+        #check if particle is selected
+        isIncluded = False
+        if (bpy.context.selected_objects != []):
+            selected = bpy.context.object
+            if (selected.type == 'MESH'):
+                if(len(selected.modifiers) > 0):
+                    if "bpx_particleNodes" in selected.modifiers[0].node_group.name:
+                        isIncluded = True
+    
+        if isIncluded == True:    
+            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Calculate Accelleration"].inputs[1], 'default_value', text="Gravity Strength")   
+            row = layout.row()
+            self.layout.label(text="Gravity Rotation")
+            row = layout.row()
+            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Accelleration Gravity"].inputs[2], 'default_value', text="")
+            
+
+class ScaleOptions(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Emitters"
+    bl_label = "Scale"
+    bl_idname = "SCENE_PT_layout_Scale"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    #display menu section
+    
+    def draw(self, context):
+        scene = bpy.context.scene
+        layout = self.layout
+        row = layout.row()
+        #selected = bpy.context.object
+        #mod = selected.modifiers
+        
+        #check if particle is selected
+        isIncluded = False
+        if (bpy.context.selected_objects != []):
+            selected = bpy.context.object
+            if (selected.type == 'MESH'):
+                if(len(selected.modifiers) > 0):
+                    if "bpx_particleNodes" in selected.modifiers[0].node_group.name:
+                        isIncluded = True
+    
+        if isIncluded == True:   
+            #speed
+            if selected.modifiers["GeometryNodes"].node_group.nodes["Group"].inputs[8].default_value == True:
+                self.layout.label(text="Particle Scale")
+                row = layout.row(align=True)   
+                #wrong! 
+                row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')   
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Group"].inputs[9], 'default_value', text="Min")
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Group"].inputs[10], 'default_value', text="Max")
+            else:
+                row = layout.row(align=True)    
+                row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')  
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Group"].inputs[2], 'default_value', text="Particle Scale")
+            row = layout.row()   
+            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Group"].inputs[5], 'default_value', text="Graph Scale Over Lifetime")
+            if selected.modifiers["GeometryNodes"].node_group.nodes["Group"].inputs[5].default_value == True:
+                curveMap = selected.modifiers["GeometryNodes"].node_group.nodes["Scale Interpolate"]
+                layout.template_curve_mapping(curveMap, "mapping")
+                row = layout.row()
+
+class RotateOptions(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "Emitters"
+    bl_label = "Rotation"
+    bl_idname = "SCENE_PT_layout_Rotate"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    #display menu section
+    
+    def draw(self, context):
+        scene = bpy.context.scene
+        layout = self.layout
+        #selected = bpy.context.object
+        #mod = selected.modifiers
+        
+        #check if particle is selected
+        isIncluded = False
+        if (bpy.context.selected_objects != []):
+            selected = bpy.context.object
+            if (selected.type == 'MESH'):
+                if(len(selected.modifiers) > 0):
+                    if "bpx_particleNodes" in selected.modifiers[0].node_group.name:
+                        isIncluded = True
+    
+        if isIncluded == True:   
+        
+            if selected.modifiers["GeometryNodes"].node_group.nodes["Start Rotation"].inputs[5].default_value == True:
+                self.layout.label(text="Start Rotation (Min/Max)")
+                row = layout.row(align=True)   
+                #wrong! 
+                row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')   
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Start Rotation"].inputs[6], 'default_value', text="Min")
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Start Rotation"].inputs[7], 'default_value', text="Max")
+            else:
+                self.layout.label(text="Start Rotation")
+                row = layout.row(align=True)    
+                row.operator("scene.showinputmenulife", text="", icon='DOWNARROW_HLT')  
+                row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Start Rotation"].inputs[4], 'default_value', text="Revolutions")
+            row = layout.row()   
+
+
 
 #curveMap = selected.modifiers["GeometryNodes"].node_group.nodes["Speed Over Life"]
 #row = layout.row()
@@ -329,3 +566,10 @@ bpy.utils.register_class(UseRandom)
 bpy.utils.register_class(ShowInputMenu)
 bpy.utils.register_class(ShowInputMenuLife)
 bpy.utils.register_class(InputSelect)
+bpy.utils.register_class(InfoPanel)
+bpy.utils.register_class(LifeOptions)
+bpy.utils.register_class(SpeedOptions)
+bpy.utils.register_class(TrailOptions)
+bpy.utils.register_class(GravityOptions)
+bpy.utils.register_class(ScaleOptions)
+bpy.utils.register_class(RotateOptions)
