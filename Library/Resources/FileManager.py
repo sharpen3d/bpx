@@ -94,8 +94,13 @@ class ConsolidateAdvanced(bpy.types.Operator):
             bpy.ops.wm.save_as_mainfile(filepath=currentPath + thisFileName)
         
         bpy.ops.outliner.orphans_purge(do_local_ids=True, do_linked_ids=True, do_recursive=False)
-        bpy.ops.scene.consolidateimages()
-        bpy.ops.scene.consolidatefonts()        
+        
+        if my_tool.include_images == True:
+            bpy.ops.scene.consolidateimages()
+        if my_tool.include_fonts == True:
+            bpy.ops.scene.consolidatefonts()
+        if my_tool.include_sounds == True:
+            bpy.ops.scene.consolidatesounds()     
         bpy.ops.wm.save_mainfile()
         
         if(my_tool.show_finished == True):
@@ -190,6 +195,89 @@ class ConsolidateFonts(bpy.types.Operator):
                     dispPath = os.path.normpath(dispPath)
                     
                     self.report({'INFO'}, "Fonts Saved in " + dispPath)
+            
+        return {"FINISHED"}
+    
+#collects all fonts
+class ConsolidateSounds(bpy.types.Operator):
+    bl_idname = "scene.consolidatesounds"
+    bl_label = "Collect Sounds"
+    
+    def execute(self, context):
+        
+        #locate files
+        thisFilePath = bpy.data.filepath
+        thisFileName = bpy.path.basename(bpy.context.blend_data.filepath)
+        fileBaseName = thisFileName.replace(".blend", "")
+        currentPath = thisFilePath.replace(thisFileName, "")
+        currentPath = currentPath[:-1]
+        truncatedPath = "C:\\"
+
+        #gets the parent of the blend file's directory
+        x = 0
+        for i in currentPath:
+            sub = currentPath[x]
+            if (sub == "\\"):    
+                truncatedPath = currentPath[:x]            
+            x=x+1
+        
+        if(fileBaseName == "untitled" or fileBaseName == "untitled" or fileBaseName == ""):
+            self.report({'INFO'}, "Please save this .blend file before using this operator")
+        else:            
+            import shutil
+            import os
+            
+            my_tool = context.scene.my_tool
+            
+            if(my_tool.save_as_new == True):
+                currentPath = my_tool.save_path
+            else:
+                thisFilePath = bpy.data.filepath
+                thisFileName = bpy.path.basename(bpy.context.blend_data.filepath)
+                currentPath = thisFilePath.replace(thisFileName, "")
+                currentPath = currentPath[:-1]        
+            
+            bpy.ops.file.make_paths_absolute('INVOKE_DEFAULT')
+
+            for sound in bpy.data.sounds:
+                             
+                directory = "ProjectFiles"
+                parent_dir = currentPath
+                parent_dir = os.path.normpath(parent_dir)
+                path = os.path.join(parent_dir, directory)
+                
+                isdir = os.path.isdir(path)
+                if (isdir == False):
+                    os.mkdir(path)
+                
+                directory = "Sounds"
+                parent_dir = currentPath+"//ProjectFiles//"
+                parent_dir = os.path.normpath(parent_dir)
+                path = os.path.join(parent_dir, directory)
+                
+                isdir = os.path.isdir(path)
+                if (isdir == False):
+                    os.mkdir(path)
+                
+                soundName = bpy.path.basename(sound.filepath)                    
+                o = sound.filepath
+                t = currentPath+"//ProjectFiles//Sounds"
+                check = currentPath+"//ProjectFiles//Sounds//"+soundName
+                
+                orig = os.path.normpath(o)
+                tar = os.path.normpath(t)          
+                chk = os.path.normpath(check)  
+                
+                if (orig != chk):
+                    shutil.copy(orig,tar)                
+                    newPath = currentPath+"//ProjectFiles//Sounds//"+soundName
+                    sound.filepath = os.path.normpath(newPath)
+        
+                bpy.ops.file.make_paths_relative()
+                dispPath = currentPath+"//ProjectFiles//Sounds//"
+                dispPath = os.path.normpath(dispPath)
+                
+                self.report({'INFO'}, "Sounds Saved in " + dispPath)
             
         return {"FINISHED"}
     
@@ -303,6 +391,11 @@ class My_settings(bpy.types.PropertyGroup):
         default=True
     )
     
+    include_sounds: bpy.props.BoolProperty(
+        name='Sounds',
+        default=True
+    )
+    
     save_as_new: bpy.props.BoolProperty(
         name='Save Into New Directory',
         description="Copy this .blend file and save to new location \n1% the new .blend will become the active file \n1% Use this method when preparing to share this file",
@@ -334,14 +427,16 @@ class CollectFiles(bpy.types.Panel):
         my_tool = context.scene.my_tool
 
         row = layout.row(align=True)
-        if (my_tool.include_fonts == True and my_tool.include_images == True):
-            row.operator("scene.consolidateadvanced")
-        elif (my_tool.include_images == True):
+        if (my_tool.include_fonts == False and my_tool.include_images == False and my_tool.include_sounds == False):
+            layout.label(text="select data to include")
+        elif (my_tool.include_fonts == False and my_tool.include_images == True and my_tool.include_sounds == False):
             row.operator("scene.consolidateimages")
-        elif (my_tool.include_fonts == True):
+        elif (my_tool.include_fonts == True and my_tool.include_images == False and my_tool.include_sounds == False):
             row.operator("scene.consolidatefonts")
+        elif (my_tool.include_fonts == False and my_tool.include_images == False and my_tool.include_sounds == True):
+            row.operator("scene.consolidatesounds")
         else:
-            layout.label(text="Select File Types To Include")
+            row.operator("scene.consolidateadvanced")
             
         row.operator("scene.openpath", text='', icon='FILEBROWSER')
         
@@ -350,6 +445,8 @@ class CollectFiles(bpy.types.Panel):
         row.prop(my_tool, "include_images")
         row = layout.row()
         row.prop(my_tool, "include_fonts")  
+        row = layout.row()
+        row.prop(my_tool, "include_sounds")  
 
 #create second panel
 class OutputSettings_Panel(bpy.types.Panel):
@@ -389,6 +486,7 @@ classes = (
     ConsolidateImages,
     ConsolidateFonts,
     ConsolidateAdvanced,  
+    ConsolidateSounds,
 )
 
 
