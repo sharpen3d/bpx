@@ -58,9 +58,6 @@ class SetGeoMat(bpy.types.Operator):
         selected.material_slots[0].material = bpy.data.materials["bpx_particleMat"]
         
         mat = bpy.context.object.material_slots[0].material
-        # newmat = mat.copy()        
-        # name new material here?
-        # bpy.context.object.material_slots[0].material = newmat
                 
         return {"FINISHED"}
     
@@ -79,8 +76,7 @@ class AddPointEmitter(bpy.types.Operator):
             geo.node_group = bpxNodes
             newNodes = geo.node_group.copy()
             geo.node_group = newNodes
-            
-            #geo["Input_7"] = cam
+
             geo["Output_2_attribute_name"] = "life"
             geo["Output_3_attribute_name"] = "col"
             geo["Output_4_attribute_name"] = "alpha"
@@ -197,15 +193,11 @@ class InfoPanel(bpy.types.Panel):
     bl_category = "Emitters"
     bl_label = "Emitters"
     bl_idname = "SCENE_PT_layout_ParticleInfo"
-
-    #display menu section
     
     def draw(self, context):
         scene = bpy.context.scene
         layout = self.layout
         row = layout.row()
-        #selected = bpy.context.object
-        #mod = selected.modifiers
         
         row.operator("scene.addpointemitter", text="Add New Emitter")
         
@@ -223,10 +215,7 @@ class ParticleOptions(bpy.types.Panel):
         scene = bpy.context.scene
         layout = self.layout
         row = layout.row()
-        #selected = bpy.context.object
-        #mod = selected.modifiers
         
-        #check if particle is selected
         isIncluded = False
         if (bpy.context.selected_objects != []):
             selected = bpy.context.object
@@ -270,10 +259,7 @@ class LifeOptions(bpy.types.Panel):
     def draw(self, context):
         scene = bpy.context.scene
         layout = self.layout
-        #selected = bpy.context.object
-        #mod = selected.modifiers
         
-        #check if particle is selected
         isIncluded = False
         if (bpy.context.selected_objects != []):
             selected = bpy.context.object
@@ -323,16 +309,11 @@ class SpeedOptions(bpy.types.Panel):
     bl_label = "Movement"
     bl_idname = "SCENE_PT_layout_Movement"
     bl_options = {'DEFAULT_CLOSED'}
-
-    #display menu section
     
     def draw(self, context):
         scene = bpy.context.scene
         layout = self.layout
-        #selected = bpy.context.object
-        #mod = selected.modifiers
-        
-        #check if particle is selected
+
         isIncluded = False
         if (bpy.context.selected_objects != []):
             selected = bpy.context.object
@@ -361,11 +342,7 @@ class SpeedOptions(bpy.types.Panel):
                 curveMap = selected.modifiers["GeometryNodes"].node_group.nodes["Speed Interpolate"]
                 layout.template_curve_mapping(curveMap, "mapping")
                 row = layout.row()
-                
-            #Global Speed options    
-#            row = layout.row()                 
-#            row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[18], 'default_value', text="Simulation Speed")     
-           
+                       
 
 class TrailOptions(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
@@ -374,17 +351,12 @@ class TrailOptions(bpy.types.Panel):
     bl_label = "Trails"
     bl_idname = "SCENE_PT_layout_Trails"
     bl_options = {'DEFAULT_CLOSED'}
-
-    #display menu section
     
     def draw(self, context):
         scene = bpy.context.scene
         layout = self.layout
         row = layout.row()
-        #selected = bpy.context.object
-        #mod = selected.modifiers
         
-        #check if particle is selected
         isIncluded = False
         if (bpy.context.selected_objects != []):
             selected = bpy.context.object
@@ -394,7 +366,6 @@ class TrailOptions(bpy.types.Panel):
                         isIncluded = True
     
         if isIncluded == True:
-            #Trail options
             row = layout.row()  
             row.prop(selected.modifiers["GeometryNodes"].node_group.nodes["Particle Spawner"].inputs[2], 'default_value', text="Trail Length")   
             row = layout.row()                    
@@ -407,17 +378,12 @@ class GravityOptions(bpy.types.Panel):
     bl_label = "Physics"
     bl_idname = "SCENE_PT_layout_Gravity"
     bl_options = {'DEFAULT_CLOSED'}
-
-    #display menu section
     
     def draw(self, context):
         scene = bpy.context.scene
         layout = self.layout
         row = layout.row()
-        #selected = bpy.context.object
-        #mod = selected.modifiers
-        
-        #check if particle is selected
+
         isIncluded = False
         if (bpy.context.selected_objects != []):
             selected = bpy.context.object
@@ -441,17 +407,12 @@ class ScaleOptions(bpy.types.Panel):
     bl_label = "Scale"
     bl_idname = "SCENE_PT_layout_Scale"
     bl_options = {'DEFAULT_CLOSED'}
-
-    #display menu section
     
     def draw(self, context):
         scene = bpy.context.scene
         layout = self.layout
         row = layout.row()
-        #selected = bpy.context.object
-        #mod = selected.modifiers
-        
-        #check if particle is selected
+
         isIncluded = False
         if (bpy.context.selected_objects != []):
             selected = bpy.context.object
@@ -487,16 +448,11 @@ class RotateOptions(bpy.types.Panel):
     bl_label = "Rotation"
     bl_idname = "SCENE_PT_layout_Rotate"
     bl_options = {'DEFAULT_CLOSED'}
-
-    #display menu section
     
     def draw(self, context):
         scene = bpy.context.scene
         layout = self.layout
-        #selected = bpy.context.object
-        #mod = selected.modifiers
         
-        #check if particle is selected
         isIncluded = False
         if (bpy.context.selected_objects != []):
             selected = bpy.context.object
@@ -547,16 +503,11 @@ class ColorOptions(bpy.types.Panel):
     bl_label = "Particle Color"
     bl_idname = "SCENE_PT_layout_Color"
     bl_options = {'DEFAULT_CLOSED'}
-
-    #display menu section
     
     def draw(self, context):
         scene = bpy.context.scene
         layout = self.layout
-        #selected = bpy.context.object
-        #mod = selected.modifiers
-        
-        #check if particle is selected
+
         isIncluded = False
         if (bpy.context.selected_objects != []):
             selected = bpy.context.object
@@ -577,88 +528,19 @@ class ColorOptions(bpy.types.Panel):
             row = layout.row()
 
 
-
-#curveMap = selected.modifiers["GeometryNodes"].node_group.nodes["Speed Over Life"]
-#row = layout.row()
-#layout.label(text="Speed Over Life")
-#layout.template_curve_mapping(curveMap, "mapping")
-
-#class InstanceParticle(bpy.types.Operator):
-#    bl_idname = "scene.instanceparticle"
-#    bl_label = "Make Instance Unique"
-#    activeChild = bpy.context.view_layer.objects.active
-#    
-#    def execute(self, context):
-#        geo = bpy.context.object.modifiers["GeometryNodes"].node_group
-#        print(geo)
-#        newgroup = geo.copy()
-#        bpy.context.object.modifiers["GeometryNodes"].node_group = newgroup
-#        #newgroup.name = bpy.context.scene["Name"]
-#        
-#        mat = bpy.context.object.material_slots[0].material
-#        print(mat)
-#        newmat = mat.copy()
-#        bpy.context.object.material_slots[0].material = newmat
-#        #newgroup.name = bpy.context.scene["Name"]
-#        
-#        return {"FINISHED"} 
-                    
-#class ParticleRendering(bpy.types.Panel):
-#    bl_space_type = 'VIEW_3D'
-#    bl_region_type = 'UI'
-#    bl_category = "Emitters"
-#    bl_label = "Color Over Life"
-#    bl_idname = "SCENE_PT_layout02"
-#    bl_options = {'DEFAULT_CLOSED'}
-#    
-#    def draw(self, context):
-#        scene = bpy.context.scene
-#        particlesInstalled = False
-#        
-#        layout = self.layout
-#        row = layout.row()
-#        
-#        selected = bpy.context.object
-#        
-#        fullstring = selected.name
-#        substring = "emitterDirection"
-#        
-#        if substring in fullstring:
-#            selected = selected.parent
-#        
-#        children = selected.children
-#                      
-#        for child in children:
-#            fullstring = child.name
-#            substring = "emitterDirection"
-#            
-#            if substring in fullstring:                     
-#                cr_node = selected.material_slots[0].material.node_tree.nodes['Color Over Life']
-#                cr_node1 = selected.material_slots[0].material.node_tree.nodes['Alpha Over Life']
-#                
-#                row = layout.row()
-#                layout.label(text="Color Over Life:")
-#                layout.template_color_ramp(cr_node, "color_ramp", expand=True)
-#                
-#                row = layout.row()
-#                layout.label(text="Alpha Over Life:")
-#                layout.template_color_ramp(cr_node1, "color_ramp", expand=True)
-#                
-#                tree = selected.material_slots[0].material.node_tree
-#                imagenode = selected.material_slots[0].material.node_tree.nodes['MixAlpha'] 
-#                image = selected.material_slots[0].material.node_tree.nodes['Alpha Stencil'] 
-#                  
-#                row = layout.row()
-#                layout.label(text="Alpha Stencil:")
-
-#                row = layout.row()
-#                layout.template_node_view(tree, imagenode, imagenode.inputs['Color1']) 
-
-
-               
-#bpy.utils.register_class(InstanceParticle)
-bpy.utils.register_class(AddPointEmitter)
+#panels
+bpy.utils.register_class(InfoPanel)
 bpy.utils.register_class(ParticleOptions)
+bpy.utils.register_class(LifeOptions)
+bpy.utils.register_class(SpeedOptions)
+bpy.utils.register_class(ScaleOptions)
+bpy.utils.register_class(RotateOptions)
+bpy.utils.register_class(TrailOptions)
+bpy.utils.register_class(GravityOptions)
+bpy.utils.register_class(ColorOptions)
+
+#tools and extras
+bpy.utils.register_class(AddPointEmitter)
 bpy.utils.register_class(SetGeoMat)
 bpy.utils.register_class(UseConstant)
 bpy.utils.register_class(UseRandom)
@@ -668,12 +550,4 @@ bpy.utils.register_class(ShowInputMenuSpeed)
 bpy.utils.register_class(ShowInputMenuScale)
 bpy.utils.register_class(ShowInputMenuRotate)
 bpy.utils.register_class(ShowInputMenuRotateOL)
-bpy.utils.register_class(ColorOptions)
 bpy.utils.register_class(InputSelect)
-bpy.utils.register_class(InfoPanel)
-bpy.utils.register_class(LifeOptions)
-bpy.utils.register_class(SpeedOptions)
-bpy.utils.register_class(TrailOptions)
-bpy.utils.register_class(GravityOptions)
-bpy.utils.register_class(ScaleOptions)
-bpy.utils.register_class(RotateOptions)
