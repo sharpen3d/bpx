@@ -1,9 +1,21 @@
 import bpy
+import bpy.props
 
 thisFilePath = bpy.data.filepath
 thisFileName = bpy.path.basename(bpy.context.blend_data.filepath)
 currentPath = thisFilePath.replace(thisFileName, "")
 currentPath = currentPath[:-1]
+
+width = 1024
+height = 1024
+
+wm = bpy.context.window_manager
+km = wm.keyconfigs.addon.keymaps.new(name='Window', space_type='EMPTY')
+kmi = km.keymap_items.new("scene.resetcam", type='E', shift=True, value ='PRESS')
+
+wm = bpy.context.window_manager
+km = wm.keyconfigs.addon.keymaps.new(name='Window', space_type='EMPTY')
+kmi = km.keymap_items.new("scene.button2", type='N', shift=True, value ='PRESS')
 
 class PivotMenu(bpy.types.Menu):
     bl_label = "Set Pivot"
@@ -222,10 +234,67 @@ class FixPix(bpy.types.Operator):
         bpy.ops.object.editmode_toggle()
                 
         return {"FINISHED"}
+
+class ShowSolidsMenu(bpy.types.Operator):
+    bl_idname = "scene.newsolidmenu"
+    bl_label = "Input Selection"
     
+    def execute(self, context):
+        global width
+        global height
+                 
+        bpy.ops.wm.call_menu(name=NewSolidMenu.bl_idname)
+                
+        return {"FINISHED"}
+    
+class SetHeight(bpy.types.Operator):
+    bl_idname = "scene.setheight"
+    bl_label = "Set Height"    
+    
+    def execute(self, context):
+        global width
+        global height
+        ss_tool = context.scene.ss_tool
+                 
+        width = ss_tool.height
+        bpy.ops.wm.call_menu(name=NewSolidMenu.bl_idname)
+                
+        return {"FINISHED"}
+
+class SetWidth(bpy.types.Operator):
+    bl_idname = "scene.setwidth"
+    bl_label = "Set Width"    
+    
+    def execute(self, context):
+        global width
+        global height
+        ss_tool = context.scene.ss_tool
+                 
+        width = ss_tool.width
+        bpy.ops.wm.call_menu(name=NewSolidMenu.bl_idname)
+                
+        return {"FINISHED"}
+
+class NewSolidMenu(bpy.types.Menu):
+    bl_label = "New 2D Layer"
+    bl_idname = "INPUT_MT_NEW_SOLID_MENU"
+
+    def draw(self, context):
+        layout = self.layout
+        row = layout.row()
+        ss_tool = context.scene.ss_tool
+        row = layout.row(align=True)
+        row.prop(ss_tool, "height")
+        layout.operator("scene.setwidth", text="", icon='CHECKMARK')
+        row = layout.row(align=True)
+        row.prop(ss_tool, "width")
+        layout.operator("scene.setheight",text="", icon='CHECKMARK')
+        row = layout.row()
+        layout.operator("scene.button2")
+           
 class Button2(bpy.types.Operator):
     bl_idname = "scene.button2"
-    bl_label = "add layer"
+    bl_label = "button2"
     bl_description = "Add a new 2D plane in current scene"
 
     def execute(self, context):
@@ -434,12 +503,14 @@ class ResetCam(bpy.types.Operator):
                 bpy.context.object.data.type = 'ORTHO'
                 bpy.context.object.data.ortho_scale = 10
                 scene.camera = bpy.context.view_layer.objects.active
+                bpy.ops.view3d.view_camera()
                 break
         else:
             bpy.ops.object.camera_add(enter_editmode=False, align='VIEW', location=(0, 0, 10), rotation=(0, 0, 0), scale=(1, 1, 1))
             bpy.context.object.data.type = 'ORTHO'
             bpy.context.object.data.ortho_scale = 10
             scene.camera = bpy.context.view_layer.objects.active
+            bpy.ops.view3d.view_camera()
                 
         return {"FINISHED"}
 
@@ -720,34 +791,56 @@ class SelectedSolid(bpy.types.Panel):
                             break                                    
                     
 
+class SOLID_settings(bpy.types.PropertyGroup):
+    width: bpy.props.IntProperty(
+        name="Width (px)",
+        default=1024
+    )
+    
+    height: bpy.props.IntProperty(
+        name="Height (px)",
+        default=1024
+    )
 
-def register():  
-    #bpy.utils.register_class(StoreImages)     
-    bpy.utils.register_class(Selected)
-    bpy.utils.register_class(SelectCam)
-    bpy.utils.register_class(Button2)
-    bpy.utils.register_class(MyOptions)
-    bpy.utils.register_class(ResetCam)
-    bpy.utils.register_class(SetMat)
-    bpy.utils.register_class(MatchTexSize)
-    bpy.utils.register_class(FixPix)
-    bpy.utils.register_class(LayoutRig)
-    bpy.utils.register_class(ScreenLayout)
-    bpy.utils.register_class(PivotMenu)
-    bpy.utils.register_class(ShowPivotMenu)
-    bpy.utils.register_class(MatMenu)
-    bpy.utils.register_class(ShowMatMenu)
-    bpy.utils.register_class(SelectedSolid)
-    
-    #Pivot Menu
-    bpy.utils.register_class(PivotCenter)
-    bpy.utils.register_class(PivotBottomLeft)
-    bpy.utils.register_class(PivotBottomRight)
-    bpy.utils.register_class(PivotTopLeft)
-    bpy.utils.register_class(PivotTopRight)
-    bpy.utils.register_class(PivotLeftCenter)
-    bpy.utils.register_class(PivotTopCenter)
-    bpy.utils.register_class(PivotRightCenter)
-    bpy.utils.register_class(PivotBottomCenter)
-    
-register()
+
+classes = (
+    SOLID_settings,
+    ShowSolidsMenu,
+    NewSolidMenu,
+    Selected,
+    SelectCam,
+    Button2,
+    MyOptions,
+    ResetCam,
+    SetMat,
+    MatchTexSize,
+    FixPix,
+    LayoutRig,
+    ScreenLayout,
+    PivotMenu,
+    MatMenu,
+    ShowMatMenu,
+    SelectedSolid,
+    PivotCenter,
+    PivotBottomLeft,
+    PivotTopRight,
+    PivotLeftCenter,
+    PivotTopCenter,
+    PivotRightCenter,
+    PivotBottomCenter,
+    SetWidth,
+    SetHeight,
+)
+
+def register():
+    for cls in classes:
+        bpy.utils.register_class(cls)
+    bpy.types.Scene.ss_tool = bpy.props.PointerProperty(type=SOLID_settings)
+
+def unregister():
+    del bpy.types.Scene.tm_tool
+    for cls in reversed(classes):
+        bpy.utils.unregister_class(cls)
+        
+if __name__ == "__main__":
+    register()    
