@@ -7,13 +7,7 @@
 VERSION 1
 
 0e616640-80cf-4245-ad21-8470bc0c190c:Materials:Materials
-0735034c-d575-441d-9d23-8e4a76972994:Materials/Image:Materials-Image
-ff3511a4-6377-4b62-9de0-630a0c427902:Materials/Special:Materials-Special
 2c8e3376-5874-43b1-88a7-47fb40f3c6a1:Particles:Particles
-1dcc8d92-5699-416e-9440-c8900418fee3:Particles/Looping:Particles-Looping
-150ecf04-f0d8-4a23-afb1-a0779d43d7d7:Particles/Looping/basic_mat:Particles-Looping-basic_mat
-dc473dd4-d901-462c-b55a-a6dd6fead44c:Particles/One-Shot:Particles-One-Shot
-1e0d11fc-9d9d-4136-ae94-2104ba081b2a:Particles/One-Shot/basic_mat:Particles-One-Shot-basic_mat
 c044217c-254e-4dee-9009-df25b7389eac:Special:Special
 41d21184-c178-4f04-bb59-9a6b35b3a3e6:Special/GeoNode_Animated:Special-GeoNode_Animated
 d3180257-f460-486b-808a-de0dbf8ed2f0:Special/Geo_Node_Meshes:Special-Geo_Node_Meshes
