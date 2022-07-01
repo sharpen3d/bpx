@@ -6,9 +6,5 @@
 
 VERSION 1
 
-0e616640-80cf-4245-ad21-8470bc0c190c:Materials:Materials
 2c8e3376-5874-43b1-88a7-47fb40f3c6a1:Particles:Particles
-c044217c-254e-4dee-9009-df25b7389eac:Special:Special
-41d21184-c178-4f04-bb59-9a6b35b3a3e6:Special/GeoNode_Animated:Special-GeoNode_Animated
-d3180257-f460-486b-808a-de0dbf8ed2f0:Special/Geo_Node_Meshes:Special-Geo_Node_Meshes
-9b5e814d-f957-4a77-a385-d639d38cf5c6:Special/Materials:Special-Materials
+0e616640-80cf-4245-ad21-8470bc0c190c:Shaders:Shaders
