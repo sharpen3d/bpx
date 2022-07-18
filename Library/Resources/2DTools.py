@@ -830,6 +830,7 @@ classes = (
     PivotBottomCenter,
     SetWidth,
     SetHeight,
+    ShowPivotMenu,
 )
 
 def register():
