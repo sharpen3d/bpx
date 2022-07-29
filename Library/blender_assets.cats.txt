@@ -7,5 +7,11 @@
 VERSION 1
 
 2c8e3376-5874-43b1-88a7-47fb40f3c6a1:Particles:Particles
+db7089e4-305a-47e8-bb6e-40eb4305994e:Particles/Emitters:Particles-Emitters
+2986e1a3-d407-42c0-8218-d25a1c21a0c8:Particles/Systems:Particles-Systems
+d52450dd-51a1-478a-a7de-39f3db5cd401:SafeBet:SafeBet
+1e151e3e-0579-42d9-b466-a0b2745a33a6:SafeBet/Materials:SafeBet-Materials
+76b73bd2-3af7-4288-87f5-7d8b841cd327:SafeBet/Objects:SafeBet-Objects
+16ade426-5dfa-4f1d-81ae-307861e2911b:SafeBet/Particles:SafeBet-Particles
 0e616640-80cf-4245-ad21-8470bc0c190c:Shaders:Shaders
 0652edd5-c4b9-41bc-9349-18998f4e728a:Text:Text
