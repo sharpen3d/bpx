@@ -244,8 +244,8 @@ class append_button(bpy.types.Operator):
             if index == 4:
                 if tm_tool.GridPacker == True:
                     for text in bpy.data.texts:
-                        if text.name == "2DTools.py":
-                            print("skipping 2D Tools, already installed")
+                        if text.name == "GridPacker.py":
+                            print("skipping GridPacker, already installed")
                             break
                     else:
                         installatindex = True  
@@ -255,7 +255,7 @@ class append_button(bpy.types.Operator):
                 if tm_tool.QuickActions == True:
                     for text in bpy.data.texts:
                         if text.name == "QuickActions.py":
-                            print("skipping 2D Tools, already installed")
+                            print("skipping Quick Actions, already installed")
                             break
                     else:                        
                         installatindex = True
