@@ -1,5 +1,7 @@
 import bpy
 import bpy.props
+import pathlib
+import os
 
 thisFilePath = bpy.data.filepath
 thisFileName = bpy.path.basename(bpy.context.blend_data.filepath)
@@ -60,6 +62,59 @@ class MatMenu(bpy.types.Panel):
                     row = layout.row()
                     
                     break 
+
+class AddImagesFromFolder(bpy.types.Operator):
+    bl_idname = "scene.imagesfromfolder"
+    bl_label = "Add Images From Folder"
+    
+    def execute(self, context):
+        
+        #loop throught ProjectFiles/Images        
+        thisFilePath = bpy.data.filepath
+        thisFileName = bpy.path.basename(bpy.context.blend_data.filepath)
+        currentPath = thisFilePath.replace(thisFileName, "")
+        currentPath = currentPath[:-1]        
+        initial_count = 0
+        dir = currentPath+"//ProjectFiles//Images"
+        
+        #loop through folder
+        for path in os.listdir(dir):
+            pathtoimage = os.path.join(dir, path)
+            
+            #if not another directory (must be image)
+            if os.path.isfile(pathtoimage):
+                bpy.data.images.load(pathtoimage)
+            
+                #add plane
+                bpy.ops.scene.button2()
+                #set material
+                
+                #set image in material
+                imagename = ""
+                selected = bpy.context.object
+                if (len(selected.material_slots) > 0):
+                    for node in selected.material_slots[0].material.node_tree.nodes:
+                        if node.name == "bpy_TransparentImage":                                        
+                            tree = selected.material_slots[0].material.node_tree
+                            imagenode = selected.material_slots[0].material.node_tree.nodes['Image Texture'] 
+                            
+                            # set image
+                            for image in bpy.data.images:
+                                if image.filepath == pathtoimage:   
+                                    imagename = image.name 
+                                    imagenode.image = bpy.data.images[imagename]
+                                    break                    
+                            break 
+                
+                #match texture size
+                bpy.ops.scene.matchtexsize() 
+                newname = os.path.basename(pathtoimage).split('.')[:-1]
+                newname = newname[0]   
+                selected.name = newname
+                selected.active_material.name = selected.name + "_mat"
+                selected.data.name = selected.name + "_mesh"
+        
+        return {"FINISHED"}
 
 class ShowPivotMenu(bpy.types.Operator):
     bl_idname = "scene.showpivotmenu"
@@ -568,6 +623,7 @@ class MyOptions(bpy.types.Panel):
         
         row = layout.row()
         row.operator("scene.screenlayout")
+        
         #row = layout.row()     
         #row.operator("scene.storeimages")
         #row = layout.row()     
@@ -597,6 +653,9 @@ class Selected(bpy.types.Panel):
             
         row = layout.row()
         row.operator("scene.button2", text= "Add Layer")    
+        
+        row = layout.row()
+        row.operator("scene.imagesfromfolder")
 
 class MyOptions(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
@@ -665,12 +724,6 @@ class SelectedSolid(bpy.types.Panel):
     
     def draw(self, context):
         layout = self.layout 
-        
-        row = layout.row()
-        row.operator("scene.resetcam")  
-            
-        row = layout.row()
-        row.operator("scene.button2", text= "Add Layer")    
             
         row = layout.row() 
         obj = bpy.context.object
@@ -723,7 +776,6 @@ class SelectedSolid(bpy.types.Panel):
                 #maybe useful?
                 #self.layout.label(text= "Z Index= " + str(zLayer))
                 
-                row = layout.row()
                 row.prop(geo, '["Input_3"]', text = "width")
                 row = layout.row()
                 row.prop(geo, '["Input_4"]', text = "height")
@@ -831,6 +883,7 @@ classes = (
     SetWidth,
     SetHeight,
     ShowPivotMenu,
+    AddImagesFromFolder,
 )
 
 def register():
