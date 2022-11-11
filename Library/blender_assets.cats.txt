@@ -6,6 +6,8 @@
 
 VERSION 1
 
+a0302961-efac-43f0-a1ce-7558abfd488e:Geometry Nodes:Geometry Nodes
+5d59f945-af70-4336-a51d-f6670739b1b5:Geometry Nodes/Arrays:Geometry Nodes-Arrays
 2c8e3376-5874-43b1-88a7-47fb40f3c6a1:Particles:Particles
 db7089e4-305a-47e8-bb6e-40eb4305994e:Particles/Emitters:Particles-Emitters
 2986e1a3-d407-42c0-8218-d25a1c21a0c8:Particles/Systems:Particles-Systems
@@ -14,4 +16,9 @@ d52450dd-51a1-478a-a7de-39f3db5cd401:SafeBet:SafeBet
 76b73bd2-3af7-4288-87f5-7d8b841cd327:SafeBet/Objects:SafeBet-Objects
 16ade426-5dfa-4f1d-81ae-307861e2911b:SafeBet/Particles:SafeBet-Particles
 0e616640-80cf-4245-ad21-8470bc0c190c:Shaders:Shaders
+9d189b2b-bdae-42a8-82ea-d9d9e4dc798c:Shaders/Animated:Shaders-Animated
+f423e24b-55b1-48de-b185-180799af538e:Shaders/Particles:Shaders-Particles
+c81e4a12-df0d-4412-93c4-bc047936db6f:Shaders/Simple:Shaders-Simple
+3032540a-89e9-4086-89c2-27b0132b87fd:Shaders/Stylized:Shaders-Stylized
+93812fb1-4b19-4c0e-a082-2696b760d5a6:Shaders/Utility:Shaders-Utility
 0652edd5-c4b9-41bc-9349-18998f4e728a:Text:Text
