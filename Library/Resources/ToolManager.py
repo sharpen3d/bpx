@@ -9,7 +9,7 @@ asset_libraries = filepaths.asset_libraries
 resources_path = ""
 verified_library_path = ""
 selected_tool = ""
-tools_list = ["2DTools.py", "WordArtist.py", "FileManager.py", "GeoEmitters.py", "GridPacker.py", "QuickActions.py", "SymbolGridCreator.py"]
+tools_list = ["2DTools.py", "WordArtist.py", "FileManager.py", "GeoEmitters.py", "GridPacker.py", "QuickActions.py", "SymbolGridCreator.py", "ResolutionSettings.py"]
 
 class TestOpenTool(bpy.types.Operator):
     bl_idname = "scene.testopentool"
@@ -281,6 +281,15 @@ class append_button(bpy.types.Operator):
                     else:
                         installatindex = True  
                         bpy.ops.scene.symbolgridappend()
+
+            if index == 7:
+                if tm_tool.ResolutionSettings == True:
+                    for text in bpy.data.texts:
+                        if text.name == "ResolutionSettings.py":
+                            print("skipping Resolution Settings, already installed")
+                            break
+                    else:
+                        installatindex = True  
             
             #install                     
             if installatindex == True:
@@ -383,7 +392,7 @@ class resources_panel(bpy.types.Panel):
         else:            
             row.prop(tm_tool, "QuickActions", text=label0)
             
-        #Grid Packer
+        #Grid Creator
         row = layout.row()        
         label0 = "Symbol Grid Creator"
         for i in bpy.data.texts:
@@ -392,6 +401,16 @@ class resources_panel(bpy.types.Panel):
                 break            
         else:            
             row.prop(tm_tool, "SymbolGridCreator", text=label0)
+            
+        #Resolution Settings
+        row = layout.row()        
+        label0 = "Resolution Options"
+        for i in bpy.data.texts:
+            if i.name == tools_list[6]:
+                self.layout.label(text=label0 + " (installed)", icon = 'CHECKBOX_HLT')
+                break            
+        else:            
+            row.prop(tm_tool, "ResolutionSettings", text=label0)
         
 
 #def register():
@@ -433,6 +452,11 @@ class TM_settings(bpy.types.PropertyGroup):
     )
     
     SymbolGridCreator: bpy.props.BoolProperty(
+        name=tools_list[5],
+        default=False
+    )
+    
+    ResolutionSettings: bpy.props.BoolProperty(
         name=tools_list[5],
         default=False
     )
