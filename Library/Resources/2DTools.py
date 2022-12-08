@@ -770,7 +770,7 @@ class SelectedSolid(bpy.types.Panel):
                 row = layout.row()
                 #layout.prop(scene, '["bpxName"]')
                 #self.layout.label(text= "position= " + str(pixLocX)+", "+ str(pixLocY))
-                self.layout.label(text= "Selected:")
+                #self.layout.label(text= "Selected:")
                 #self.layout.label(text = "size= "+str(geo["Input_3"]) + "x" + str(geo["Input_4"]))
                 
                 #maybe useful?
